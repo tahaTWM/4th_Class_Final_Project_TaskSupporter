@@ -1,0 +1,76 @@
+name: app2
+description: A new Flutter project.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter    
+
+  adaptive_action_sheet: ^2.0.0
+  animated_splash_screen: ^1.1.0
+  cached_network_image: ^3.0.0
+  cupertino_icons: null
+  cupertino_radio_choice: ^1.0.1+1
+  custom_dialog_box: null
+  dialog: ^0.7.2+1
+  email_validator: ^2.0.1
+  file_picker: null
+  flappy_search_bar: ^1.7.2
+  flutter_slidable: ^0.6.0
+  font_awesome_flutter: null
+  getwidget: ^1.2.4
+  http: ^0.13.3
+  image_picker: ^0.6.6+5
+  intl: null
+  lottie: ^1.0.1
+  page_transition: null
+  path_provider: ^2.0.1
+  permission_handler: null
+  shared_preferences: ^2.0.0
+  slider_button: null
+  timeago: ^3.0.2
+  typicons_flutter: ^0.4.2
+  will_tabbar: null
+
+
+cupertino_icons: ^1.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+flutter:
+
+
+  uses-material-design: true
+
+  assets:
+    - asset/illustration.png
+    - asset/logo.png
+    - asset/logo2.png
+    - asset/image.png
+
+  fonts:
+    - family: Gilory
+      fonts:
+        - asset: asset/fonts/Gilroy-Light.ttf
+    - family: GiloryBold
+      fonts:
+        - asset: asset/fonts/Gilroy-ExtraBold.ttf
+
+    - family: CCL
+      fonts:
+        - asset: asset/fonts/CascadiaCode-Light.ttf
+    - family: CCB
+      fonts:
+        - asset: asset/fonts/CascadiaCode-Bold.ttf
+
+    - family: RubikL
+      fonts:
+        - asset: asset/fonts/Rubik-Light.ttf
+    - family: RubikB
+      fonts:
+        - asset: asset/fonts/Rubik-Bold.ttf
