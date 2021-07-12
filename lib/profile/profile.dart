@@ -39,6 +39,9 @@ class _ProfileState extends State<Profile> {
 
   File image;
 
+  String workspaces = "0";
+  String tasks = "0";
+
   @override
   void initState() {
     super.initState();
@@ -145,7 +148,7 @@ class _ProfileState extends State<Profile> {
                 height: MediaQuery.of(context).size.width * 0.45,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(),
+                  // border: Border.all(),
                 ),
                 child: Stack(
                   children: [
@@ -171,12 +174,13 @@ class _ProfileState extends State<Profile> {
                               height: MediaQuery.of(context).size.width * 0.45,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(100),
+                                border: Border.all(width: 2),
                               ),
                               child: Image.file(image),
                             )
                     else
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
+                        borderRadius: BorderRadius.circular(10),
                         child: Image.network(
                           "${MyApp.url}$imagePath",
                           width: MediaQuery.of(context).size.width * 0.45,
@@ -223,11 +227,75 @@ class _ProfileState extends State<Profile> {
                 height: width > 400 ? 30 : 20,
               ),
               Text(
-                fName,
+                fName + " " + sName,
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
               SizedBox(
-                height: width > 400 ? 200 : 100,
+                height: width > 400 ? 50 : 20,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: EdgeInsets.fromLTRB(10, 2, 10, 2),
+                    child: Column(
+                      children: [
+                        Container(
+                            padding: EdgeInsets.all(5),
+                            child: Text(
+                              workspaces,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            )),
+                        // SizedBox(height: 5),
+                        Text(
+                          "Workspace",
+                          style: TextStyle(color: Colors.grey[700]),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(10, 2, 10, 2),
+                    child: Column(
+                      children: [
+                        Container(
+                            padding: EdgeInsets.all(5),
+                            child: Text(
+                              tasks,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            )),
+                        // SizedBox(height: 5),
+                        Text(
+                          "Tasks",
+                          style: TextStyle(color: Colors.grey[700]),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(10, 2, 10, 2),
+                    child: Column(
+                      children: [
+                        Container(
+                            padding: EdgeInsets.all(5),
+                            child: Text(
+                              "0",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            )),
+                        // SizedBox(height: 3),
+                        Text(
+                          "Notifactions",
+                          style: TextStyle(color: Colors.grey[700]),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: width > 400 ? 150 : 70,
               ),
               InkWell(
                 onTap: () => bottomsheet(context, "Edit Account"),
@@ -235,8 +303,9 @@ class _ProfileState extends State<Profile> {
                   child: Column(
                     children: [
                       Container(
+                        padding: EdgeInsets.symmetric(vertical: 5),
                         width: width - 100,
-                        height: MediaQuery.of(context).size.height * 0.04,
+                        height: MediaQuery.of(context).size.height * 0.06,
                         decoration: BoxDecoration(
                             color: Color.fromRGBO(0, 82, 205, 0.1),
                             borderRadius: BorderRadius.circular(30)),
@@ -259,8 +328,9 @@ class _ProfileState extends State<Profile> {
                   child: Column(
                     children: [
                       Container(
+                        padding: EdgeInsets.symmetric(vertical: 5),
                         width: width - 100,
-                        height: MediaQuery.of(context).size.height * 0.04,
+                        height: MediaQuery.of(context).size.height * 0.06,
                         decoration: BoxDecoration(
                             color: Color.fromRGBO(0, 82, 205, 0.1),
                             borderRadius: BorderRadius.circular(30)),
@@ -534,6 +604,7 @@ class _ProfileState extends State<Profile> {
                   color: Color.fromRGBO(243, 246, 255, 1),
                   borderRadius: BorderRadius.circular(10)),
               child: TextFormField(
+                enabled: false,
                 controller: textEditingControllerEmail,
                 onFieldSubmitted: (_) {},
                 validator: (value) {
@@ -543,7 +614,7 @@ class _ProfileState extends State<Profile> {
                   return null;
                 },
                 style: TextStyle(
-                  color: Color.fromRGBO(0, 82, 205, 1),
+                  color: Colors.grey[400],
                 ),
                 decoration: InputDecoration(
                   border: InputBorder.none,
@@ -559,7 +630,7 @@ class _ProfileState extends State<Profile> {
         cancelAction: CancelAction(
           title: const Text('Update'),
           onPressed: () {
-            print("update");
+            _updateName(context);
             Navigator.pop(context);
           },
         ),
@@ -567,6 +638,8 @@ class _ProfileState extends State<Profile> {
   }
 
   name() async {
+    var response = null;
+    var jsonResponse = null;
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     List<dynamic> list = sharedPreferences.getStringList("firstSecond");
     email = sharedPreferences.getString("email");
@@ -577,6 +650,21 @@ class _ProfileState extends State<Profile> {
       fName = list[0];
       sName = list[1];
       imagePath = sharedPreferences.getString("userAvatar");
+    });
+    Map<String, String> requestHeaders = {
+      "Content-type": "application/json; charset=UTF-8",
+      "token": sharedPreferences.getString("token")
+    };
+
+    var url = Uri.parse("${MyApp.url}/");
+    response = await http.get(
+      url,
+      headers: requestHeaders,
+    );
+    jsonResponse = await json.decode(response.body);
+    setState(() {
+      workspaces = jsonResponse["assignedWorkspaces"].toString();
+      tasks = jsonResponse["assignedTasks"].toString();
     });
   }
 
@@ -695,55 +783,55 @@ class _ProfileState extends State<Profile> {
     var url = Uri.parse("${MyApp.url}/user/password/reset");
     if (newPassword == confirmPassword) {
       print(oldPassword + " " + newPassword + " " + confirmPassword);
-      // response = http.post(url,
-      //     headers: requestHeaders,
-      //     body: jsonEncode(<String, String>{
-      //       "oldPassword": oldPassword,
-      //       "newPassword": newPassword,
-      //     }));
-      // print(response.body);
-      // jsonResponse = json.decode(response.body);
+      response = http.post(url,
+          headers: requestHeaders,
+          body: jsonEncode(<String, String>{
+            "oldPassword": oldPassword,
+            "newPassword": newPassword,
+          }));
+      print(response.body);
+      jsonResponse = json.decode(response.body);
 
-      // if (jsonResponse["successful"]) {
-      //   scaffoldMessengerKey.currentState.showSnackBar(SnackBar(
-      //       duration: Duration(seconds: 5),
-      //       content: Row(
-      //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //         children: [
-      //           Text(
-      //             "Password is updated",
-      //             style: TextStyle(
-      //                 color: Colors.white,
-      //                 fontFamily: "RubikL",
-      //                 fontSize: w > 400 ? 20 : 17),
-      //           ),
-      //           Icon(
-      //             Icons.check,
-      //             color: Colors.green,
-      //           ),
-      //         ],
-      //       )));
-      // }
-      // if (!jsonResponse["successful"]) {
-      //   scaffoldMessengerKey.currentState.showSnackBar(SnackBar(
-      //       duration: Duration(seconds: 5),
-      //       content: Row(
-      //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //         children: [
-      //           Text(
-      //             jsonResponse["message"],
-      //             style: TextStyle(
-      //                 color: Colors.white,
-      //                 fontFamily: "RubikL",
-      //                 fontSize: w > 400 ? 20 : 17),
-      //           ),
-      //           Icon(
-      //             Icons.warning_amber_rounded,
-      //             color: Colors.yellow,
-      //           ),
-      //         ],
-      //       )));
-      // }
+      if (jsonResponse["successful"]) {
+        scaffoldMessengerKey.currentState.showSnackBar(SnackBar(
+            duration: Duration(seconds: 5),
+            content: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Password is updated",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: "RubikL",
+                      fontSize: w > 400 ? 20 : 17),
+                ),
+                Icon(
+                  Icons.check,
+                  color: Colors.green,
+                ),
+              ],
+            )));
+      }
+      if (!jsonResponse["successful"]) {
+        scaffoldMessengerKey.currentState.showSnackBar(SnackBar(
+            duration: Duration(seconds: 5),
+            content: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  jsonResponse["message"],
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: "RubikL",
+                      fontSize: w > 400 ? 20 : 17),
+                ),
+                Icon(
+                  Icons.warning_amber_rounded,
+                  color: Colors.yellow,
+                ),
+              ],
+            )));
+      }
     } else {
       scaffoldMessengerKey.currentState.showSnackBar(SnackBar(
           duration: Duration(seconds: 5),
@@ -763,6 +851,74 @@ class _ProfileState extends State<Profile> {
               ),
             ],
           )));
+    }
+  }
+
+  _updateName(BuildContext context) async {
+    var response = null;
+    var jsonResponse = null;
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    Map<String, String> requestHeaders = {
+      "Content-type": "application/json; charset=UTF-8",
+      "token": sharedPreferences.getString("token")
+    };
+
+    if (textEditingControllerFName.text.isNotEmpty &&
+        textEditingControllerSName.text.isNotEmpty) {
+      var url = Uri.parse("${MyApp.url}/profile/edit");
+      response = await http.post(
+        url,
+        headers: requestHeaders,
+        body: jsonEncode(
+          <String, String>{
+            "firstName": textEditingControllerFName.text,
+            "secondName": textEditingControllerSName.text,
+          },
+        ),
+      );
+      jsonResponse = await json.decode(response.body);
+      if (jsonResponse["successful"] == true) {
+        await sharedPreferences.setStringList('firstSecond', [
+          jsonResponse['data']['firstName'],
+          jsonResponse['data']['secondName'],
+        ]);
+
+        scaffoldMessengerKey.currentState.showSnackBar(SnackBar(
+          duration: Duration(seconds: 5),
+          content: ListTile(
+            contentPadding: EdgeInsets.all(0),
+            title: Text(
+              "your name will change after restart the app",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: "CCB",
+                  fontSize: MediaQuery.of(context).size.width > 400 ? 16 : 13),
+            ),
+            trailing: Icon(
+              Icons.check,
+              color: Colors.green,
+            ),
+          ),
+        ));
+      } else {
+        scaffoldMessengerKey.currentState.showSnackBar(SnackBar(
+          duration: Duration(seconds: 5),
+          content: ListTile(
+            contentPadding: EdgeInsets.all(0),
+            title: Text(
+              jsonResponse["message"],
+              style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: "CCB",
+                  fontSize: MediaQuery.of(context).size.width > 400 ? 20 : 17),
+            ),
+            trailing: Icon(
+              Icons.error_outline_rounded,
+              color: Colors.yellow,
+            ),
+          ),
+        ));
+      }
     }
   }
 }

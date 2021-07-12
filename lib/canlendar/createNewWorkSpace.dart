@@ -206,103 +206,200 @@ class _CreateNewWorkSpaceState extends State<CreateNewWorkSpace> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(errorMSG),
-          Text(
-            "WorkSpaces Name",
-            style: TextStyle(
-                color: Colors.blue, fontSize: 27, fontWeight: FontWeight.bold),
-          ),
-          TextField(
-            style: TextStyle(fontSize: 38, color: Colors.black),
-            decoration: InputDecoration(
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-                border: OutlineInputBorder()),
-            controller: _workspaceTitle,
-          ),
-          SizedBox(height: 40),
-          Text(
-            "Description",
-            style: TextStyle(
-                color: Colors.blue, fontSize: 27, fontWeight: FontWeight.bold),
-          ),
-          TextField(
-            style: TextStyle(fontSize: 20, color: Colors.black),
-            decoration: InputDecoration(
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-                border: OutlineInputBorder()),
-            controller: _workspaceDesc,
-            minLines: 1,
-            maxLines: 5,
-          ),
-          SizedBox(height: 20),
-          // Padding(
-          //   padding:
-          //       const EdgeInsets.only(left: 10, right: 25, top: 40, bottom: 30),
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //     children: [
-          //       Text(
-          //         "Add Member to Workspace",
-          //         style: TextStyle(fontSize: 24, color: Colors.grey),
-          //         overflow: TextOverflow.ellipsis,
-          //       ),
-          //       IconButton(
-          //         icon: Icon(
-          //           Icons.person_add_sharp,
-          //           size: 35,
-          //           color: Colors.blue,
-          //         ),
-          //         onPressed: () {
-          //           _getMemberToInvite();
-          //           _searchForMember.clear();
-          //         },
-          //       ),
-          //     ],
-          //   ),
-          // ),
           Padding(
-            padding: const EdgeInsets.all(0),
-            child: Center(
-              // ignore: deprecated_member_use
-              child: RaisedButton.icon(
-                onPressed: () {
-                  widget.title == 'Edit WorkSpace'
-                      ? updateWorkspace(
-                          _workspaceTitle.text, _workspaceDesc.text)
-                      : createWorkspace(
-                          _workspaceTitle.text, _workspaceDesc.text);
-                },
-                icon: Icon(
-                  Icons.download_done_rounded,
-                  size: MediaQuery.of(context).size.width > 400 ? 50 : 30,
-                ),
-                label: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                  child: Text(
-                    widget.title == 'Edit WorkSpace' ? "Update" : "Save",
-                    style: TextStyle(
-                        fontFamily: "RubikB",
-                        fontSize:
-                            MediaQuery.of(context).size.width > 400 ? 30 : 20),
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: TextFormField(
+                maxLength: 100,
+                autofocus: false,
+                textAlign: TextAlign.start,
+                // ignore: deprecated_member_use
+                autovalidate: true,
+                style: Theme.of(context).textTheme.caption.copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 24,
+                      color: Colors.black,
+                    ),
+                controller: _workspaceTitle,
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.next,
+                decoration: InputDecoration(
+                  labelText: "Workspace Name",
+                  contentPadding:
+                      EdgeInsets.only(left: 30, top: 15, bottom: 15),
+                  labelStyle: TextStyle(fontSize: 24),
+                  errorStyle: Theme.of(context).textTheme.caption.copyWith(
+                        color: Colors.red,
+                        fontWeight: FontWeight.w700,
+                      ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    borderSide: BorderSide(
+                      color: Color.fromRGBO(0, 104, 255, 1),
+                    ),
                   ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    borderSide: BorderSide(
+                      color: Color.fromRGBO(0, 104, 255, 1),
+                    ),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    borderSide: BorderSide(
+                      color: Color.fromRGBO(0, 104, 255, 1),
+                    ),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    borderSide: BorderSide(
+                      color: Color.fromRGBO(0, 104, 255, 1),
+                    ),
+                  ),
+                  hintText: "Enter ",
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    borderSide: BorderSide(
+                      color: Color.fromRGBO(0, 104, 255, 1),
+                    ),
+                  ),
+                  focusColor: Color.fromRGBO(0, 104, 255, 1),
                 ),
-                color: Colors.lightBlue[300],
-                elevation: 10,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50)),
+                onChanged: (str) {
+                  // To do
+                },
+                onSaved: (str) {
+                  // To do
+                },
+                onFieldSubmitted: (value) {}),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: TextFormField(
+                maxLength: 255,
+                autofocus: false,
+                textAlign: TextAlign.start,
+                // ignore: deprecated_member_use
+                autovalidate: true,
+                style: Theme.of(context).textTheme.caption.copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 24,
+                      color: Colors.black,
+                    ),
+                controller: _workspaceDesc,
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.next,
+                decoration: InputDecoration(
+                  labelText: "Workspace Description",
+                  contentPadding:
+                      EdgeInsets.only(left: 30, top: 15, bottom: 15),
+                  labelStyle: TextStyle(fontSize: 24),
+                  errorStyle: Theme.of(context).textTheme.caption.copyWith(
+                        color: Colors.red,
+                        fontWeight: FontWeight.w700,
+                      ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    borderSide: BorderSide(
+                      color: Color.fromRGBO(0, 104, 255, 1),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    borderSide: BorderSide(
+                      color: Color.fromRGBO(0, 104, 255, 1),
+                    ),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    borderSide: BorderSide(
+                      color: Color.fromRGBO(0, 104, 255, 1),
+                    ),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    borderSide: BorderSide(
+                      color: Color.fromRGBO(0, 104, 255, 1),
+                    ),
+                  ),
+                  hintText: "Enter ",
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    borderSide: BorderSide(
+                      color: Color.fromRGBO(0, 104, 255, 1),
+                    ),
+                  ),
+                  focusColor: Color.fromRGBO(0, 104, 255, 1),
+                ),
+                onChanged: (str) {
+                  // To do
+                },
+                onSaved: (str) {
+                  // To do
+                },
+                onFieldSubmitted: (value) {}),
+          ),
+
+          Container(
+            margin: EdgeInsets.only(top: 20),
+            decoration: BoxDecoration(
+                color: Color.fromRGBO(216, 229, 255, 1),
+                borderRadius: BorderRadius.circular(50),
+                border: Border.all(
+                    width: 1, color: Color.fromRGBO(0, 104, 255, 1))),
+            width: double.infinity,
+            height: 60,
+            // ignore: deprecated_member_use
+            child: FlatButton(
+              onPressed: () async {
+                widget.title == 'Edit WorkSpace'
+                    ? updateWorkspace(_workspaceTitle.text, _workspaceDesc.text)
+                    : createWorkspace(
+                        _workspaceTitle.text, _workspaceDesc.text);
+              },
+              child: Text(
+                widget.title == 'Edit WorkSpace' ? "Update" : "Save",
+                style: TextStyle(
+                    fontSize: 22,
+                    fontFamily: "Rubik",
+                    color: Color.fromRGBO(62, 128, 255, 1)),
               ),
             ),
-          )
+          ),
+          // Padding(
+          //   padding: const EdgeInsets.all(0),
+          //   child: Center(
+          //     // ignore: deprecated_member_use
+          //     child: RaisedButton.icon(
+          //       onPressed: () {
+          //         widget.title == 'Edit WorkSpace'
+          //             ? updateWorkspace(
+          //                 _workspaceTitle.text, _workspaceDesc.text)
+          //             : createWorkspace(
+          //                 _workspaceTitle.text, _workspaceDesc.text);
+          //       },
+          //       icon: Icon(
+          //         Icons.download_done_rounded,
+          //         size: MediaQuery.of(context).size.width > 400 ? 50 : 30,
+          //       ),
+          //       label: Padding(
+          //         padding:
+          //             const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+          //         child: Text(
+          //           widget.title == 'Edit WorkSpace' ? "Update" : "Save",
+          //           style: TextStyle(
+          //               fontFamily: "Rubik",
+          //               fontSize:
+          //                   MediaQuery.of(context).size.width > 400 ? 30 : 20),
+          //         ),
+          //       ),
+          //       color: Colors.lightBlue[300],
+          //       elevation: 10,
+          //       shape: RoundedRectangleBorder(
+          //           borderRadius: BorderRadius.circular(10)),
+          //     ),
+          //   ),
+          // )
         ],
       ),
     );

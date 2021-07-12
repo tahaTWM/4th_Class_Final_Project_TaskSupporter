@@ -85,7 +85,7 @@ class _HomePageState extends State<HomePage> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              userAvatar == null
+                              userAvatar.toString().contains("null")
                                   ? Container(
                                       width: width > 400 ? 60 : 40,
                                       height: width > 400 ? 60 : 40,
@@ -143,7 +143,7 @@ class _HomePageState extends State<HomePage> {
                               //   child: Icon(
                               //     Icons.search_rounded,
                               //     size: 30,
-                              //     color: Color.fromRGBO(171, 180, 212, 1),
+                              //     color: Color.fromRGBO( , 1),
                               //   ),
                               // )
                             ],
@@ -341,15 +341,13 @@ class _HomePageState extends State<HomePage> {
   //list view of all workspaces
   ListView foundworkspace(String formattedDate, BuildContext context) {
     var width = MediaQuery.of(context).size.width;
-    List<dynamic> newListOfWorkspaceReversed =
-        listOfWorkspace.reversed.toList();
     return ListView.builder(
       physics: BouncingScrollPhysics(),
       itemBuilder: (BuildContext context, int index) {
         workspaceIndex = index;
         return Container(
           margin: EdgeInsets.only(top: 10, bottom: 20),
-          padding: EdgeInsets.all(20),
+          padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(25),
@@ -361,84 +359,64 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   InkWell(
-                      child: newListOfWorkspaceReversed[index]
-                                  ["workspaceAvatar"] !=
-                              null
-                          ?
-                          // Container()
-                          ClipRRect(
-                              borderRadius: BorderRadius.circular(100),
-                              child: Image.network(
-                                "${MyApp.url}${newListOfWorkspaceReversed[index]['workspaceAvatar']}",
-                                loadingBuilder: (BuildContext context,
-                                    Widget child,
-                                    ImageChunkEvent loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      value: loadingProgress
-                                                  .expectedTotalBytes !=
-                                              null
-                                          ? loadingProgress
-                                                  .cumulativeBytesLoaded /
-                                              loadingProgress.expectedTotalBytes
-                                          : null,
-                                    ),
-                                  );
-                                },
-                                fit: BoxFit.cover,
-                                width: 40,
-                                height: 40,
-                              ),
-                            )
-                          : Container(
-                              width: 50,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                  color: Color.fromRGBO(112, 112, 112, 0.1),
-                                  borderRadius: BorderRadius.circular(50)),
-                              child: Center(
-                                  child: Text(
-                                newListOfWorkspaceReversed[index]
-                                        ["workspaceName"]
-                                    .toString()
-                                    .split('')[0],
-                                style: TextStyle(
-                                    fontSize: 22,
-                                    fontFamily: "Rubik",
-                                    fontWeight: FontWeight.w600),
-                              )),
+                    onTap: () => listOfWorkspace[index]["role"] == "employer"
+                        ? _showPicker(
+                            context, listOfWorkspace[index]["workspaceId"])
+                        : null,
+                    child: !listOfWorkspace[index]["workspaceAvatar"]
+                            .toString()
+                            .contains("null")
+                        ?
+                        // Container()
+                        ClipRRect(
+                            borderRadius: BorderRadius.circular(100),
+                            child: Image.network(
+                              "${MyApp.url}${listOfWorkspace[index]['workspaceAvatar']}",
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes
+                                        : null,
+                                  ),
+                                );
+                              },
+                              fit: BoxFit.cover,
+                              width: 40,
+                              height: 40,
                             ),
-                      onTap: () {
-                        setState(() {
-                          imageEvictUrl =
-                              "${MyApp.url}${newListOfWorkspaceReversed[index]['workspaceAvatar']}";
-                        });
-                        newListOfWorkspaceReversed[index]["role"] == "employer"
-                            ? _showPicker(
-                                context,
-                                newListOfWorkspaceReversed[index]
-                                    ["workspaceId"])
-                            : null;
-                      }),
+                          )
+                        : Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                                color: Color.fromRGBO(112, 112, 112, 0.1),
+                                borderRadius: BorderRadius.circular(50)),
+                            child: Center(
+                                child: Text(
+                              listOfWorkspace[index]["workspaceName"]
+                                  .toString()
+                                  .split('')[0],
+                              style: TextStyle(
+                                  fontSize: 22,
+                                  fontFamily: "Rubik",
+                                  fontWeight: FontWeight.w600),
+                            )),
+                          ),
+                  ),
                   Container(
                     child: Row(
                       children: [
                         GestureDetector(
-                          onTap: () {
-                            if (newListOfWorkspaceReversed[index][2] == true)
-                              setState(() {
-                                newListOfWorkspaceReversed[index][2] = false;
-                              });
-                            else
-                              setState(() {
-                                newListOfWorkspaceReversed[index][2] = true;
-                              });
-                          },
+                          onTap: () {},
                           child: Icon(
-                            newListOfWorkspaceReversed[index][2] == true
-                                ? Icons.star_rate_rounded
-                                : Icons.star_border_rounded,
+                            Icons.star_border_rounded,
                             size: width > 400 ? 50 : 25,
                             color: Color.fromRGBO(132, 132, 132, 1),
                           ),
@@ -456,8 +434,7 @@ class _HomePageState extends State<HomePage> {
                               child: Row(
                                 children: [
                                   Icon(
-                                    newListOfWorkspaceReversed[index]["role"] ==
-                                            "employer"
+                                    listOfWorkspace[index]["role"] == "employer"
                                         ? Icons.delete
                                         : Icons.logout,
                                     size: width > 400 ? 30 : 20,
@@ -465,8 +442,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                   SizedBox(width: 12),
                                   Text(
-                                    newListOfWorkspaceReversed[index]["role"] ==
-                                            "employer"
+                                    listOfWorkspace[index]["role"] == "employer"
                                         ? "Delete"
                                         : "Leave",
                                     style: TextStyle(
@@ -477,8 +453,7 @@ class _HomePageState extends State<HomePage> {
                                 ],
                               ),
                             ),
-                            newListOfWorkspaceReversed[index]["role"] ==
-                                    "employer"
+                            listOfWorkspace[index]["role"] == "employer"
                                 ? PopupMenuItem(
                                     value: 2,
                                     child: Row(
@@ -524,11 +499,10 @@ class _HomePageState extends State<HomePage> {
                             switch (item) {
                               case 1:
                                 {
-                                  newListOfWorkspaceReversed[index]["role"] ==
-                                          "employer"
-                                      ? delete(newListOfWorkspaceReversed[index]
-                                          ["workspaceId"])
-                                      : leave(newListOfWorkspaceReversed[index]
+                                  listOfWorkspace[index]["role"] == "employer"
+                                      ? delete(
+                                          listOfWorkspace[index]["workspaceId"])
+                                      : leave(listOfWorkspace[index]
                                           ["workspaceId"]);
                                 }
                                 break;
@@ -539,12 +513,11 @@ class _HomePageState extends State<HomePage> {
                                         builder: (context) =>
                                             CreateNewWorkSpace(
                                                 "Edit WorkSpace",
-                                                newListOfWorkspaceReversed[
-                                                    index]["workspaceId"],
-                                                newListOfWorkspaceReversed[
-                                                    index]["workspaceName"],
-                                                newListOfWorkspaceReversed[
-                                                        index]
+                                                listOfWorkspace[index]
+                                                    ["workspaceId"],
+                                                listOfWorkspace[index]
+                                                    ["workspaceName"],
+                                                listOfWorkspace[index]
                                                     ["workspaceDescription"],
                                                 userAvatar)));
                                 break;
@@ -553,10 +526,13 @@ class _HomePageState extends State<HomePage> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => WorkSpaceMember(
-                                            newListOfWorkspaceReversed[index]
-                                                ["workspaceId"],
-                                            userAvatar,
-                                            checkWorkSpaces)));
+                                              listOfWorkspace[index]
+                                                  ["workspaceId"],
+                                              userAvatar,
+                                              checkWorkSpaces,
+                                              "Add Member to Workspace",
+                                              null,
+                                            )));
                                 break;
                             }
                           },
@@ -573,10 +549,9 @@ class _HomePageState extends State<HomePage> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => ShowAllTasks(
-                              newListOfWorkspaceReversed[index]
-                                  ["workspaceName"],
-                              newListOfWorkspaceReversed[index]["workspaceId"],
-                              newListOfWorkspaceReversed[index]["role"],
+                              listOfWorkspace[index]["workspaceName"],
+                              listOfWorkspace[index]["workspaceId"],
+                              listOfWorkspace[index]["role"],
                               userAvatar)));
                 },
                 child: Container(
@@ -590,7 +565,7 @@ class _HomePageState extends State<HomePage> {
                           Padding(
                             padding: const EdgeInsets.only(top: 10),
                             child: Text(
-                              "${newListOfWorkspaceReversed[index]["workspaceName"]}",
+                              "${listOfWorkspace[index]["workspaceName"]}",
                               style: TextStyle(
                                 fontSize: width > 400 ? 30 : 22,
                                 fontFamily: "RubikB",
@@ -601,11 +576,11 @@ class _HomePageState extends State<HomePage> {
                           Padding(
                             padding: EdgeInsets.only(top: 10, bottom: 30),
                             child: Text(
-                              "${newListOfWorkspaceReversed[index]["workspaceDescription"]}",
+                              "${listOfWorkspace[index]["workspaceDescription"]}",
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                  fontSize: 25,
+                                  fontSize: width > 400 ? 24 : 22,
                                   fontFamily: "Rubik",
                                   color: Color.fromRGBO(112, 112, 112, 1)),
                             ),
@@ -665,8 +640,9 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                   SizedBox(width: 10),
                                   Text(
-                                    DateFormat.yMMMMd('en_US')
-                                        .format(DateTime.now()),
+                                    listOfWorkspace[index]["creation_date"]
+                                        .toString()
+                                        .split('T')[0],
                                     style: TextStyle(
                                         fontSize: 20,
                                         color:
@@ -686,24 +662,30 @@ class _HomePageState extends State<HomePage> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => WorkSpaceMember(
-                                      newListOfWorkspaceReversed[index]
-                                          ["workspaceId"],
-                                      userAvatar,
-                                      checkWorkSpaces))),
+                                        listOfWorkspace[index]["workspaceId"],
+                                        userAvatar,
+                                        checkWorkSpaces,
+                                        "Add Member to Workspace",
+                                        null,
+                                      ))),
                           child: Container(
                             // color: Colors.lightBlue,
-                            width: width * 0.27,
-                            height: MediaQuery.of(context).size.height * 0.07,
-                            child: newListOfWorkspaceReversed[index]['users']
-                                        .length !=
+                            width: width * 0.28,
+                            height: width > 400
+                                ? MediaQuery.of(context).size.height * 0.07
+                                : MediaQuery.of(context).size.height * 0.06,
+                            child: listOfWorkspace[index]['users'].length !=
                                     null
                                 ? ListView.builder(
                                     physics: BouncingScrollPhysics(),
                                     scrollDirection: Axis.horizontal,
                                     itemBuilder: (BuildContext bc, int index) {
-                                      return newListOfWorkspaceReversed[
-                                                      workspaceIndex]["users"]
-                                                  [index]["user_avatar"] ==
+                                      print(listOfWorkspace[workspaceIndex]
+                                              ["users"]
+                                          .length);
+                                      return listOfWorkspace[workspaceIndex]
+                                                      ["users"][index]
+                                                  ["user_avatar"] ==
                                               null
                                           ? Container(
                                               width: 50,
@@ -714,24 +696,22 @@ class _HomePageState extends State<HomePage> {
                                                 border: Border.all(),
                                               ),
                                               child: Center(
-                                                  child: Text(
-                                                      newListOfWorkspaceReversed[
-                                                                          0]
-                                                                      ["users"]
-                                                                  [index]
-                                                              ["firstName"]
-                                                          .toString()
-                                                          .split('')[0]
-                                                          .toUpperCase()
-                                                          .toUpperCase())))
+                                                  child: Text(listOfWorkspace[0]
+                                                              ["users"][index]
+                                                          ["firstName"]
+                                                      .toString()
+                                                      .split('')[0]
+                                                      .toUpperCase()
+                                                      .toUpperCase())))
                                           : Padding(
                                               padding: const EdgeInsets.only(
                                                   left: 5),
                                               child: ClipOval(
                                                 child: Image.network(
-                                                  "${MyApp.url}${newListOfWorkspaceReversed[workspaceIndex]["users"][index]["user_avatar"]}",
+                                                  "${MyApp.url}${listOfWorkspace[workspaceIndex]["users"][index]["user_avatar"]}",
                                                   fit: BoxFit.cover,
-                                                  width: 55,
+                                                  // width: width > 400 ? 55 : 48,
+                                                  // height: width > 400 ? 55 : 48,
                                                   loadingBuilder:
                                                       (BuildContext context,
                                                           Widget child,
@@ -756,34 +736,10 @@ class _HomePageState extends State<HomePage> {
                                                 ),
                                               ),
                                             );
-                                      // Container(
-                                      //     width: 60,
-                                      //     height: 60,
-                                      //     decoration: BoxDecoration(
-                                      //       shape: BoxShape.circle,
-                                      //       image: DecorationImage(
-                                      //           image: NetworkImage(
-                                      //               "${MyApp.url}${newListOfWorkspaceReversed[workspaceIndex]["users"][index]["user_avatar"]}")),
-                                      //     ),
-                                      //     // child: Image.network(
-                                      //     //  ,
-                                      //     //   width: 60,
-                                      //     //   height: 60,
-                                      //     // ),
-                                      //   );
                                     },
-
-                                    // "${MyApp.url}${newListOfWorkspaceReversed[workspaceIndex]["users"][index]["user_avatar"]}",
-                                    // fit: BoxFit.cover,
-                                    // width: 60,
-                                    itemCount: newListOfWorkspaceReversed[
-                                            workspaceIndex]["users"]
+                                    itemCount: listOfWorkspace[workspaceIndex]
+                                            ["users"]
                                         .length,
-                                    // newListOfWorkspaceReversed[
-                                    //                 workspaceIndex]
-                                    //             ['users']
-                                    //         .length ??
-                                    //     1,
                                   )
                                 : Container(),
                           ),
@@ -797,7 +753,7 @@ class _HomePageState extends State<HomePage> {
           ),
         );
       },
-      itemCount: newListOfWorkspaceReversed.length ?? 1,
+      itemCount: listOfWorkspace.length ?? 1,
     );
   }
 

@@ -8,8 +8,7 @@ environment:
 
 dependencies:
   flutter:
-    sdk: flutter    
-
+    sdk: flutter
   adaptive_action_sheet: ^2.0.0
   animated_splash_screen: ^1.1.0
   cached_network_image: ^3.0.0
@@ -30,12 +29,12 @@ dependencies:
   page_transition: null
   path_provider: ^2.0.1
   permission_handler: null
+  provider: ^5.0.0
   shared_preferences: ^2.0.0
   slider_button: null
   timeago: ^3.0.2
   typicons_flutter: ^0.4.2
   will_tabbar: null
-
 
 cupertino_icons: ^1.0.2
 
@@ -43,7 +42,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 flutter:
-
 
   uses-material-design: true
 

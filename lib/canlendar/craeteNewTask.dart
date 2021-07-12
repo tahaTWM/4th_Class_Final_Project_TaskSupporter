@@ -10,8 +10,11 @@ class CreateNewTask extends StatefulWidget {
   String title;
   int workspaceId;
   final Function checkExsitingTask;
+  int taskID;
+  int role;
 
-  CreateNewTask(this.title, this.workspaceId, this.checkExsitingTask);
+  CreateNewTask(this.title, this.workspaceId, this.checkExsitingTask,
+      this.taskID, this.role);
 
   @override
   _CreateNewTaskState createState() => _CreateNewTaskState();
@@ -20,12 +23,6 @@ class CreateNewTask extends StatefulWidget {
 class _CreateNewTaskState extends State<CreateNewTask> {
   bool reminder = false;
 
-  static final Map<String, String> status = {
-    'waiting': 'Waiting',
-    'inProcess': 'InProcess',
-    'stack': 'Stack',
-    'done': 'Done'
-  };
   static final Map<String, String> priorty = {
     'normal': 'NORMAL',
     'urgent': 'Urgent'
@@ -41,15 +38,6 @@ class _CreateNewTaskState extends State<CreateNewTask> {
     'high',
     'urgent'
   ];
-
-  String _selectedStatus = status.keys.first;
-
-  void onStatusSelected(String statusKey) {
-    setState(() {
-      _selectedStatus = statusKey;
-    });
-    print(_selectedStatus);
-  }
 
   String _selectedPriorty = priorty.keys.first;
 
@@ -152,8 +140,34 @@ class _CreateNewTaskState extends State<CreateNewTask> {
                         ],
                       ),
                     ),
+                    widget.title == "Edit Task"
+                        ? widget.role == 0
+                            ? PopupMenuItem(
+                                value: 3,
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      widget.title == "Edit Task"
+                                          ? Icons.remove_circle
+                                          : null,
+                                      size: 30,
+                                      color: Colors.red[200],
+                                    ),
+                                    SizedBox(width: 12),
+                                    Text(
+                                      "Leave",
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontFamily: "RubicB",
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              )
+                            : null
+                        : null,
                     PopupMenuItem(
-                      value: 3,
+                      value: 4,
                       child: Row(
                         children: [
                           Icon(
@@ -180,7 +194,11 @@ class _CreateNewTaskState extends State<CreateNewTask> {
                       case 1:
                         {
                           widget.title == "Edit Task"
-                              ? _updateTask()
+                              ? _updateTask(
+                                  title: _textEditingControllerTitle.text,
+                                  content: _textEditingControllerContent.text,
+                                  priorty: _selectedPriorty,
+                                  taskID: widget.taskID)
                               : _saveTask(
                                   title: _textEditingControllerTitle.text,
                                   content: _textEditingControllerContent.text,
@@ -189,12 +207,15 @@ class _CreateNewTaskState extends State<CreateNewTask> {
                         break;
                       case 2:
                         {
-                          print(memberOfTask);
                           _getMemberToInvite();
                         }
 
                         break;
+
                       case 3:
+                        _leave(widget.taskID);
+                        break;
+                      case 4:
                         widget.title == "Edit Task"
                             ? Navigator.pop(context)
                             : Navigator.pop(context);
@@ -222,59 +243,191 @@ class _CreateNewTaskState extends State<CreateNewTask> {
 
   Widget part1() {
     var children2 = <Widget>[
-      Text(
-        "Title",
-        style: TextStyle(
-            color: Color.fromRGBO(0, 122, 255, 1),
-            fontSize: 27,
-            fontWeight: FontWeight.bold),
-      ),
-      // enter title of task
-      TextField(
-        style: TextStyle(fontSize: 38, color: Colors.black),
-        decoration: InputDecoration(
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey),
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: TextFormField(
+            maxLength: 100,
+            autofocus: false,
+            textAlign: TextAlign.start,
+            // ignore: deprecated_member_use
+            autovalidate: true,
+            style: Theme.of(context).textTheme.caption.copyWith(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 24,
+                  color: Colors.black,
+                ),
+            controller: _textEditingControllerTitle,
+            keyboardType: TextInputType.text,
+            textInputAction: TextInputAction.next,
+            decoration: InputDecoration(
+              labelText: "Task Name",
+              contentPadding: EdgeInsets.only(left: 30, top: 15, bottom: 15),
+              labelStyle: TextStyle(fontSize: 24),
+              errorStyle: Theme.of(context).textTheme.caption.copyWith(
+                    color: Colors.red,
+                    fontWeight: FontWeight.w700,
+                  ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0),
+                borderSide: BorderSide(
+                  color: Color.fromRGBO(0, 104, 255, 1),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0),
+                borderSide: BorderSide(
+                  color: Color.fromRGBO(0, 104, 255, 1),
+                ),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0),
+                borderSide: BorderSide(
+                  color: Color.fromRGBO(0, 104, 255, 1),
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0),
+                borderSide: BorderSide(
+                  color: Color.fromRGBO(0, 104, 255, 1),
+                ),
+              ),
+              hintText: "Enter ",
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0),
+                borderSide: BorderSide(
+                  color: Color.fromRGBO(0, 104, 255, 1),
+                ),
+              ),
+              focusColor: Color.fromRGBO(0, 104, 255, 1),
             ),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey),
-            ),
-            border: OutlineInputBorder()),
-        controller: _textEditingControllerTitle,
+            onChanged: (str) {
+              // To do
+            },
+            onSaved: (str) {
+              // To do
+            },
+            onFieldSubmitted: (value) {}),
       ),
-      SizedBox(height: 40),
-      SizedBox(height: 40),
-      Text(
-        "Content",
-        style: TextStyle(
-            color: Color.fromRGBO(0, 122, 255, 1),
-            fontSize: 27,
-            fontWeight: FontWeight.bold),
-      ),
-      // enter content of the task
-      TextField(
-        style: TextStyle(fontSize: 20, color: Colors.black),
-        decoration: InputDecoration(
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey),
+
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: TextFormField(
+            maxLength: 255,
+            autofocus: false,
+            textAlign: TextAlign.start,
+            // ignore: deprecated_member_use
+            autovalidate: true,
+            style: Theme.of(context).textTheme.caption.copyWith(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 24,
+                  color: Colors.black,
+                ),
+            controller: _textEditingControllerContent,
+            keyboardType: TextInputType.text,
+            textInputAction: TextInputAction.next,
+            decoration: InputDecoration(
+              labelText: "Task Description",
+              contentPadding: EdgeInsets.only(left: 30, top: 15, bottom: 15),
+              labelStyle: TextStyle(fontSize: 24),
+              errorStyle: Theme.of(context).textTheme.caption.copyWith(
+                    color: Colors.red,
+                    fontWeight: FontWeight.w700,
+                  ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0),
+                borderSide: BorderSide(
+                  color: Color.fromRGBO(0, 104, 255, 1),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0),
+                borderSide: BorderSide(
+                  color: Color.fromRGBO(0, 104, 255, 1),
+                ),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0),
+                borderSide: BorderSide(
+                  color: Color.fromRGBO(0, 104, 255, 1),
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0),
+                borderSide: BorderSide(
+                  color: Color.fromRGBO(0, 104, 255, 1),
+                ),
+              ),
+              hintText: "Enter ",
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0),
+                borderSide: BorderSide(
+                  color: Color.fromRGBO(0, 104, 255, 1),
+                ),
+              ),
+              focusColor: Color.fromRGBO(0, 104, 255, 1),
             ),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey),
-            ),
-            border: OutlineInputBorder()),
-        controller: _textEditingControllerContent,
+            onChanged: (str) {
+              // To do
+            },
+            onSaved: (str) {
+              // To do
+            },
+            onFieldSubmitted: (value) {}),
       ),
-      widget.title != "Edit Task" ? Container() : _status(),
-      SizedBox(height: 40),
-      SizedBox(height: 40),
+
+      // Text(
+      //   "Title",
+      //   style: TextStyle(
+      //       color: Color.fromRGBO(0, 122, 255, 1),
+      //       fontSize: 27,
+      //       fontWeight: FontWeight.bold),
+      // ),
+      // // enter title of task
+      // TextField(
+      //   style: TextStyle(fontSize: 38, color: Colors.black),
+      //   decoration: InputDecoration(
+      //       focusedBorder: UnderlineInputBorder(
+      //         borderSide: BorderSide(color: Colors.grey),
+      //       ),
+      //       enabledBorder: UnderlineInputBorder(
+      //         borderSide: BorderSide(color: Colors.grey),
+      //       ),
+      //       border: OutlineInputBorder()),
+      //   controller: _textEditingControllerTitle,
+      // ),
+      // SizedBox(height: 40),
+      // SizedBox(height: 40),
+      // Text(
+      //   "Content",
+      //   style: TextStyle(
+      //       color: Color.fromRGBO(0, 122, 255, 1),
+      //       fontSize: 27,
+      //       fontWeight: FontWeight.bold),
+      // ),
+      // // enter content of the task
+      // TextField(
+      //   style: TextStyle(fontSize: 20, color: Colors.black),
+      //   decoration: InputDecoration(
+      //       focusedBorder: UnderlineInputBorder(
+      //         borderSide: BorderSide(color: Colors.grey),
+      //       ),
+      //       enabledBorder: UnderlineInputBorder(
+      //         borderSide: BorderSide(color: Colors.grey),
+      //       ),
+      //       border: OutlineInputBorder()),
+      //   controller: _textEditingControllerContent,
+      // ),
+      // widget.title != "Edit Task" ? Container() : _status(),
+      // SizedBox(height: 40),
+      // SizedBox(height: 40),
       Text(
         "Priorty",
         style: TextStyle(
-            color: Color.fromRGBO(0, 122, 255, 1),
-            fontSize: 27,
+            color: Color.fromRGBO(0, 104, 255, 1),
+            fontSize: 24,
             fontWeight: FontWeight.bold),
       ),
-      SizedBox(height: 40),
+      SizedBox(height: 20),
       CupertinoRadioChoice(
         choices: priorty,
         onChange: onStatusPriorty,
@@ -292,30 +445,75 @@ class _CreateNewTaskState extends State<CreateNewTask> {
     );
   }
 
-  Column _status() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: 40),
-        SizedBox(height: 40),
-        Text(
-          "Status",
-          style: TextStyle(
-              color: Color.fromRGBO(0, 122, 255, 1),
-              fontSize: 27,
-              fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 40),
-        CupertinoRadioChoice(
-          choices: status,
-          onChange: onStatusSelected,
-          initialKeyValue: 'waiting',
-        ),
-      ],
-    );
-  }
+  _updateTask(
+      {String title, String content, String priorty, int taskID}) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
-  _updateTask() {}
+    Map<String, String> requestHeaders = {
+      "Content-type": "application/json; charset=UTF-8",
+      "token": sharedPreferences.getString("token")
+    };
+    var jsonResponse = null;
+    var url = Uri.parse("${MyApp.url}/workspace/task/edit");
+
+    if (title.isNotEmpty) {
+      var response = await http.post(url,
+          headers: requestHeaders,
+          body: jsonEncode({
+            "taskId": taskID,
+            "taskTitle": title,
+            "taskContent": content,
+            "priority": priorty,
+          }));
+      jsonResponse = json.decode(response.body);
+      if (jsonResponse["successful"]) {
+        scaffoldMessengerKey.currentState.showSnackBar(SnackBar(
+            duration: Duration(seconds: 2),
+            content: Row(
+              children: [
+                Icon(Icons.check, color: Colors.green),
+                SizedBox(width: 10),
+                Text(
+                  "Task is Create",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            )));
+        widget.checkExsitingTask();
+        Navigator.pop(context);
+      }
+      if (!jsonResponse["successful"]) {
+        scaffoldMessengerKey.currentState.showSnackBar(SnackBar(
+            duration: Duration(seconds: 2),
+            content: Row(
+              children: [
+                Icon(Icons.warning_rounded, color: Colors.yellow),
+                SizedBox(width: 10),
+                Text(
+                  jsonResponse["message"],
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            )));
+      }
+    } else {
+      scaffoldMessengerKey.currentState.showSnackBar(SnackBar(
+          duration: Duration(seconds: 2),
+          content: Row(
+            children: [
+              Icon(Icons.warning_rounded, color: Colors.yellow),
+              SizedBox(width: 10),
+              Text(
+                "task title is Empty",
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          )));
+    }
+  }
 
   _saveTask({String title, String content, String priorty}) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -326,24 +524,6 @@ class _CreateNewTaskState extends State<CreateNewTask> {
     };
     var jsonResponse = null;
     var url = Uri.parse("${MyApp.url}/workspace/new/task");
-    // print("\n");
-    // print("\n");
-    // print("\n");
-    // print("\n");
-
-    // print({
-    //   "workspace_id": widget.workspaceId,
-    //   "taskTitle": title,
-    //   "taskContent": content,
-    //   "priority": priorty,
-    //   "assignedMembers": memberOfTask
-    // });
-    // print("\n");
-    // print("\n");
-    // print("\n");
-    // print("\n");
-
-    // memberOfTask == null ? _getMemberToInvite() : null;
 
     if (title.isNotEmpty) {
       var response = await http.post(url,
@@ -403,56 +583,6 @@ class _CreateNewTaskState extends State<CreateNewTask> {
             ],
           )));
     }
-
-    // if (response.statusCode == 200) {
-    //   if (jsonResponse["successful"] == true) {
-    //     if (jsonResponse["type"] == "ok") {
-    //       scaffoldMessengerKey.currentState.showSnackBar(SnackBar(
-    //           duration: Duration(seconds: 2),
-    //           content: Row(
-    //             children: [
-    //               Icon(Icons.check, color: Colors.green),
-    //               SizedBox(width: 10),
-    //               Text(
-    //                 "Task is Create",
-    //                 maxLines: 1,
-    //                 overflow: TextOverflow.ellipsis,
-    //               ),
-    //             ],
-    //           )));
-    //       Navigator.pop(context);
-    //       Navigator.pop(context);
-    //     } else {
-    //       scaffoldMessengerKey.currentState.showSnackBar(SnackBar(
-    //           duration: Duration(seconds: 2),
-    //           content: Row(
-    //             children: [
-    //               Icon(Icons.warning_rounded, color: Colors.yellow),
-    //               SizedBox(width: 10),
-    //               Text(
-    //                 jsonResponse["message"],
-    //                 maxLines: 1,
-    //                 overflow: TextOverflow.ellipsis,
-    //               ),
-    //             ],
-    //           )));
-    //     }
-    //   } else {
-    //     scaffoldMessengerKey.currentState.showSnackBar(SnackBar(
-    //         duration: Duration(seconds: 2),
-    //         content: Row(
-    //           children: [
-    //             Icon(Icons.warning_rounded, color: Colors.yellow),
-    //             SizedBox(width: 10),
-    //             Text(
-    //               jsonResponse["message"],
-    //               maxLines: 1,
-    //               overflow: TextOverflow.ellipsis,
-    //             ),
-    //           ],
-    //         )));
-    //   }
-    // }
   }
 
   showsnakbar(String type, String msg) {
@@ -491,46 +621,46 @@ class _CreateNewTaskState extends State<CreateNewTask> {
             width: MediaQuery.of(context).size.width,
             child: Column(
               children: [
-                widget.workspaceId != null
-                    ? Container(
-                        height: w > 400 ? 70 : 60,
-                        margin: EdgeInsets.all(15),
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                            color: Color.fromRGBO(243, 246, 255, 1),
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Center(
-                          child: TextFormField(
-                            autofocus: keyboard,
-                            focusNode: inputNode,
-                            controller: _searchForMember,
-                            onFieldSubmitted: (_) {
-                              _searchForMemberInTask(
-                                  workSpaceID, _searchForMember.text);
-                            },
-                            // ignore: missing_return
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'search box is Empty';
-                              }
-                              return null;
-                            },
-                            style: TextStyle(
-                              fontSize: w > 400 ? 22 : 18,
-                              color: Color.fromRGBO(0, 82, 205, 1),
-                            ),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: "Search for Member",
-                              // hintStyle: TextStyle(
-                              //   fontSize: 25,
-                              // ),
-                              icon: Icon(Icons.search, size: 30),
-                            ),
-                          ),
-                        ),
-                      )
-                    : null,
+                // widget.workspaceId != null
+                //     ? Container(
+                //         height: w > 400 ? 70 : 60,
+                //         margin: EdgeInsets.all(15),
+                //         padding: EdgeInsets.symmetric(horizontal: 10),
+                //         decoration: BoxDecoration(
+                //             color: Color.fromRGBO(243, 246, 255, 1),
+                //             borderRadius: BorderRadius.circular(10)),
+                //         child: Center(
+                //           child: TextFormField(
+                //             autofocus: keyboard,
+                //             focusNode: inputNode,
+                //             controller: _searchForMember,
+                //             onFieldSubmitted: (_) {
+                //               _searchForMemberInTask(
+                //                   workSpaceID, _searchForMember.text);
+                //             },
+                //             // ignore: missing_return
+                //             validator: (value) {
+                //               if (value == null || value.isEmpty) {
+                //                 return 'search box is Empty';
+                //               }
+                //               return null;
+                //             },
+                //             style: TextStyle(
+                //               fontSize: w > 400 ? 22 : 18,
+                //               color: Color.fromRGBO(0, 82, 205, 1),
+                //             ),
+                //             decoration: InputDecoration(
+                //               border: InputBorder.none,
+                //               hintText: "Search for Member",
+                //               // hintStyle: TextStyle(
+                //               //   fontSize: 25,
+                //               // ),
+                //               icon: Icon(Icons.search, size: 30),
+                //             ),
+                //           ),
+                //         ),
+                //       )
+                //     : null,
                 Expanded(
                   child: Container(
                     width: MediaQuery.of(context).size.width,
@@ -540,7 +670,7 @@ class _CreateNewTaskState extends State<CreateNewTask> {
                             listOfWorkspaceMembers[index]["user_avatar"];
                         return Padding(
                           padding: const EdgeInsets.symmetric(
-                              vertical: 20, horizontal: 20),
+                              vertical: 10, horizontal: 10),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -616,8 +746,6 @@ class _CreateNewTaskState extends State<CreateNewTask> {
                                         memberOfTask.add(member);
                                       });
                                     }
-                                    print(member);
-                                    print(memberOfTask);
                                   })
                             ],
                           ),
@@ -700,5 +828,29 @@ class _CreateNewTaskState extends State<CreateNewTask> {
       setState(() {
         listOfWorkspaceMembers = jsonResponse["data"];
       });
+  }
+
+  _leave(int id) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    // ignore: avoid_init_to_null
+    var jsonResponse = null;
+    var url = Uri.parse("${MyApp.url}/workspace/task/leave/$id");
+    var response = await http.delete(
+      url,
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+        "token": sharedPreferences.getString("token"),
+      },
+    );
+    jsonResponse = json.decode(response.body);
+    if (response.statusCode == 200) {
+      print(jsonResponse["success"]);
+      setState(() {
+        widget.checkExsitingTask;
+      });
+      Navigator.pop(context);
+    } else if (response.statusCode == 400) {
+      print(jsonResponse["error"]);
+    }
   }
 }

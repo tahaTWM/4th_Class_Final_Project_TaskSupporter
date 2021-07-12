@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:app2/all_tasks/taskDetials.dart';
+import 'package:app2/homePage/workSpaceMembers.dart';
+import 'package:cupertino_radio_choice/cupertino_radio_choice.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/widgets.dart';
@@ -38,6 +41,8 @@ class _ShowAllTasksState extends State<ShowAllTasks>
   var workspaceId;
   ScrollController _scrollController = ScrollController();
 
+  bool closeTask = false;
+
   @override
   void initState() {
     _tabController = new TabController(length: 4, vsync: this);
@@ -48,6 +53,23 @@ class _ShowAllTasksState extends State<ShowAllTasks>
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
   bool istaskFound = false;
+
+  static final Map<String, String> status = {
+    'WAITING': 'WAITING',
+    'IN_PROGRESS': 'IN_PROGRESS',
+    'STUCk': 'STUCk',
+    'DONE': 'DONE'
+  };
+
+  String _selectedStatus = status.keys.first;
+
+  void onStatusSelected(String statusKey) {
+    setState(() {
+      _selectedStatus = statusKey;
+    });
+  }
+
+  TextEditingController _action = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -168,7 +190,9 @@ class _ShowAllTasksState extends State<ShowAllTasks>
                                             builder: (context) => CreateNewTask(
                                                 "Create New Task",
                                                 widget.workspaceId,
-                                                checkIfThereAnyTaskes)));
+                                                checkIfThereAnyTaskes,
+                                                null,
+                                                null)));
                                   },
                                   icon: Icon(Icons.add,
                                       size: w > 400 ? 30 : 20,
@@ -220,6 +244,7 @@ class _ShowAllTasksState extends State<ShowAllTasks>
                                   icon: Icon(Icons.search,
                                       size: w > 400 ? 30 : 20),
                                 ),
+                                enabled: false,
                               ),
                             ),
                           ),
@@ -277,7 +302,7 @@ class _ShowAllTasksState extends State<ShowAllTasks>
                                 child: Row(
                                   children: [
                                     Text(
-                                      "Stack",
+                                      "Stuck",
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontFamily: "Rubik",
@@ -329,17 +354,12 @@ class _ShowAllTasksState extends State<ShowAllTasks>
                         child: TabBarView(
                           children: [
                             tabViewForTabBarAndTabView(
-                              listOfTasksWaiting,
-                            ),
+                                listOfTasksWaiting, "WAITING"),
                             tabViewForTabBarAndTabView(
-                              listOfTasksInProcess,
-                            ),
+                                listOfTasksInProcess, "IN_PROGRESS"),
                             tabViewForTabBarAndTabView(
-                              listOfTasksStack,
-                            ),
-                            tabViewForTabBarAndTabView(
-                              listOfTasksDone,
-                            ),
+                                listOfTasksStack, "STUCK"),
+                            tabViewForTabBarAndTabView(listOfTasksDone, "DONE"),
                           ],
                           controller: _tabController,
                         ),
@@ -433,7 +453,8 @@ class _ShowAllTasksState extends State<ShowAllTasks>
   //   );
   // }
 
-  Widget tabViewForTabBarAndTabView(List listOfTasks) {
+  Widget tabViewForTabBarAndTabView(List listOfTasks, String OldStatus) {
+    var width = MediaQuery.of(context).size.width;
     if (listOfTasks.isNotEmpty) {
       return Container(
         margin: EdgeInsets.only(top: 10, left: 20, right: 20),
@@ -444,9 +465,9 @@ class _ShowAllTasksState extends State<ShowAllTasks>
             List<dynamic> newListReversed = listOfTasks.reversed.toList();
             var newDateTime =
                 DateTime.parse(newListReversed[index]["taskCreationDate"]);
+
             return Container(
-              padding:
-                  EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 10),
+              padding: EdgeInsets.only(top: 3, left: 20, right: 20, bottom: 5),
               margin: EdgeInsets.only(top: 10, bottom: 10),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -463,7 +484,7 @@ class _ShowAllTasksState extends State<ShowAllTasks>
                       children: [
                         Container(
                           width: 120,
-                          height: 21,
+                          height: 20,
                           decoration: BoxDecoration(
                               color:
                                   newListReversed[index]["prority"] == "URGENT"
@@ -475,70 +496,120 @@ class _ShowAllTasksState extends State<ShowAllTasks>
                           icon: Icon(Icons.more_horiz,
                               color: Colors.grey, size: 40),
                           itemBuilder: (context) => [
-                            PopupMenuItem(
-                              value: 1,
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.delete,
-                                    size: 30,
-                                    color: Color.fromRGBO(158, 158, 158, 1),
-                                  ),
-                                  SizedBox(width: 12),
-                                  Text(
-                                    "Delete",
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontFamily: "RubicB",
+                            newListReversed[index]["isTaskOwner"] == 1
+                                ? PopupMenuItem(
+                                    value: 1,
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.delete,
+                                          size: 30,
+                                          color:
+                                              Color.fromRGBO(158, 158, 158, 1),
+                                        ),
+                                        SizedBox(width: 12),
+                                        Text(
+                                          "Delete",
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontFamily: "RubicB",
+                                          ),
+                                        )
+                                      ],
                                     ),
                                   )
-                                ],
-                              ),
-                            ),
-                            PopupMenuItem(
-                              value: 2,
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.edit,
-                                    size: 30,
-                                    color: Color.fromRGBO(158, 158, 158, 1),
+                                : PopupMenuItem(
+                                    value: 1,
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.delete,
+                                          size: 30,
+                                          color:
+                                              Color.fromRGBO(158, 158, 158, 1),
+                                        ),
+                                        SizedBox(width: 12),
+                                        Text(
+                                          "Leave",
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontFamily: "RubicB",
+                                          ),
+                                        )
+                                      ],
+                                    ),
                                   ),
-                                  SizedBox(width: 12),
-                                  Text(
-                                    "Edit",
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontFamily: "RubicB",
+                            newListReversed[index]["isTaskOwner"] == 1
+                                ? PopupMenuItem(
+                                    value: 2,
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.edit,
+                                          size: 30,
+                                          color:
+                                              Color.fromRGBO(158, 158, 158, 1),
+                                        ),
+                                        SizedBox(width: 12),
+                                        Text(
+                                          "Edit",
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontFamily: "RubicB",
+                                          ),
+                                        )
+                                      ],
                                     ),
                                   )
-                                ],
-                              ),
-                            ),
+                                : null,
                             PopupMenuItem(
                               value: 3,
-                              child: Row(children: [
-                                Icon(
-                                  Icons.add_circle_rounded,
-                                  size: 30,
-                                  color: Color.fromRGBO(158, 158, 158, 1),
-                                ),
-                                SizedBox(width: 12),
-                                Text(
-                                  "Add Memeber",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontFamily: "RubicB",
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.comment_bank_rounded,
+                                    size: 30,
+                                    color: Color.fromRGBO(158, 158, 158, 1),
                                   ),
-                                ),
-                              ]),
-                            )
+                                  SizedBox(width: 12),
+                                  Text(
+                                    "Add Action",
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontFamily: "RubicB",
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                            newListReversed[index]["isTaskOwner"] == 1
+                                ? PopupMenuItem(
+                                    value: 4,
+                                    child: Row(children: [
+                                      Icon(
+                                        Icons.add_circle_rounded,
+                                        size: 30,
+                                        color: Color.fromRGBO(158, 158, 158, 1),
+                                      ),
+                                      SizedBox(width: 12),
+                                      Text(
+                                        "Add Memeber",
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontFamily: "RubicB",
+                                        ),
+                                      ),
+                                    ]),
+                                  )
+                                : null
                           ],
                           onSelected: (item) {
                             switch (item) {
                               case 1:
                                 {
-                                  print("Delete task");
+                                  newListReversed[index]["isTaskOwner"] == 1
+                                      ? delete(newListReversed[index]["taskId"])
+                                      : leave(newListReversed[index]["taskId"]);
                                 }
                                 break;
                               case 2:
@@ -548,10 +619,32 @@ class _ShowAllTasksState extends State<ShowAllTasks>
                                         builder: (context) => CreateNewTask(
                                             "Edit Task",
                                             widget.workspaceId,
-                                            checkIfThereAnyTaskes)));
+                                            checkIfThereAnyTaskes,
+                                            newListReversed[index]["taskId"],
+                                            newListReversed[index]
+                                                ["isTaskOwner"])));
                                 break;
                               case 3:
-                                print("add member to task");
+                                _showDialogAction(
+                                    newListReversed[index]["taskId"],
+                                    OldStatus,
+                                    newListReversed[index]["taskId"],
+                                    newListReversed[index]["title"]);
+                                break;
+                              case 4:
+                                {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => WorkSpaceMember(
+                                                widget.workspaceId,
+                                                null,
+                                                checkIfThereAnyTaskes,
+                                                "Add Member to Task",
+                                                newListReversed[index]
+                                                    ["taskId"],
+                                              )));
+                                }
                                 break;
                             }
                           },
@@ -566,13 +659,8 @@ class _ShowAllTasksState extends State<ShowAllTasks>
                         MaterialPageRoute(
                           builder: (context) => TaskDetails(
                             title: newListReversed[index]["title"],
-                            content: newListReversed[index]["content"],
-                            member:
-                                newListReversed[index]["taskMembers"].length,
-                            status: newListReversed[index]["prority"],
-                            creationDate: newListReversed[index]
-                                ["taskCreationDate"],
-                            members: newListReversed[index]["taskMembers"],
+                            prority: newListReversed[index]["prority"],
+                            taskID: newListReversed[index]["taskId"],
                           ),
                         ),
                       );
@@ -590,10 +678,7 @@ class _ShowAllTasksState extends State<ShowAllTasks>
                                 child: Text(
                                   newListReversed[index]["title"],
                                   style: TextStyle(
-                                    fontSize:
-                                        MediaQuery.of(context).size.width > 400
-                                            ? 22
-                                            : 18,
+                                    fontSize: width > 400 ? 30 : 22,
                                     fontFamily: "RubikB",
                                   ),
                                   overflow: TextOverflow.ellipsis,
@@ -802,6 +887,212 @@ class _ShowAllTasksState extends State<ShowAllTasks>
             ),
           );
         });
+  }
+
+  delete(int id) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+
+    // ignore: avoid_init_to_null
+    var jsonResponse = null;
+    var url = Uri.parse("${MyApp.url}/workspace/task/delete/$id");
+    var response = await http.delete(
+      url,
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+        "token": sharedPreferences.getString("token"),
+      },
+    );
+    jsonResponse = json.decode(response.body);
+    if (response.statusCode == 200) {
+      print(jsonResponse["success"]);
+      setState(() {
+        checkIfThereAnyTaskes();
+      });
+      Navigator.pop(context);
+    } else if (response.statusCode == 400) {
+      print(jsonResponse["error"]);
+    }
+  }
+
+  leave(int id) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    // ignore: avoid_init_to_null
+    var jsonResponse = null;
+    var url = Uri.parse("${MyApp.url}/workspace/task/leave/$id");
+    var response = await http.delete(
+      url,
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+        "token": sharedPreferences.getString("token"),
+      },
+    );
+    jsonResponse = json.decode(response.body);
+    if (response.statusCode == 200) {
+      print(jsonResponse["success"]);
+      setState(() {
+        checkIfThereAnyTaskes();
+      });
+      Navigator.pop(context);
+    } else if (response.statusCode == 400) {
+      print(jsonResponse["error"]);
+    }
+  }
+
+  Column _status() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: 20),
+        Text(
+          "Status",
+          style: TextStyle(
+              color: Color.fromRGBO(0, 122, 255, 1),
+              fontSize: 24,
+              fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 10),
+        CupertinoRadioChoice(
+          choices: status,
+          onChange: onStatusSelected,
+          initialKeyValue: 'waiting',
+        ),
+      ],
+    );
+  }
+
+  _showDialogAction(
+      int taskID, String oldStatus, int taskid, String taskName) async {
+    _action.clear();
+    var w = MediaQuery.of(context).size.width;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(25))),
+          elevation: 5,
+          title: Center(
+            child: Text("Task Action"),
+          ),
+          content: Container(
+            height: MediaQuery.of(context).size.height * 0.5,
+            width: MediaQuery.of(context).size.width,
+            child: ListView(
+              children: [
+                Center(
+                    child: Text(
+                  taskName,
+                  style: TextStyle(
+                    fontSize: w > 400 ? 23 : 20,
+                    color: Color.fromRGBO(0, 82, 205, 1),
+                    fontWeight: FontWeight.bold,
+                  ),
+                )),
+                SizedBox(height: 10),
+                _status(),
+                SizedBox(height: 10),
+                Container(
+                  height: w > 400 ? 200 : 150,
+                  // margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  decoration: BoxDecoration(
+                      color: Color.fromRGBO(
+                        223,
+                        231,
+                        255,
+                        1,
+                      ),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Center(
+                    child: TextField(
+                      maxLines: 8,
+                      controller: _action,
+                      style: TextStyle(
+                        fontSize: w > 400 ? 20 : 16,
+                        color: Color.fromRGBO(0, 82, 205, 1),
+                      ),
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        contentPadding:
+                            EdgeInsets.only(left: 10, right: 10, top: 10),
+                        hintText:
+                            "Please leave a comment or let's us know your progress.",
+                        hintStyle: TextStyle(
+                          fontSize: w > 400 ? 20 : 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            // ignore: deprecated_member_use
+            new FlatButton(
+              child: new Text(
+                "Close",
+                style: TextStyle(color: Colors.red),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            // ignore: deprecated_member_use
+            new FlatButton(
+              child: new Text(
+                "Submit",
+                style: TextStyle(color: Colors.green),
+              ),
+              onPressed: () {
+                _updateTaskAction(oldStatus, taskid);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  _updateTaskAction(String oldStatus, int taskid) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var respnse = null;
+    var jsonResponse = null;
+    Map<String, String> requestHeaders = {
+      "Content-type": "application/json; charset=UTF-8",
+      "token": sharedPreferences.getString("token")
+    };
+    var url = Uri.parse("${MyApp.url}/task/action");
+    print(_action.text.toString() +
+        "------" +
+        oldStatus.toString() +
+        "------" +
+        _selectedStatus.toString() +
+        "------" +
+        _action.text.isNotEmpty.toString() +
+        "------" +
+        taskid.toString());
+    respnse = await http.post(
+      url,
+      headers: requestHeaders,
+      body: jsonEncode(
+        <String, dynamic>{
+          "comment": _action.text,
+          "old_task_status": oldStatus,
+          "new_task_status": _selectedStatus,
+          "action_type": _action.text.isNotEmpty ? "COMMENT" : "OPEN",
+          "task_id": taskid
+        },
+      ),
+    );
+    jsonResponse = json.decode(respnse.body);
+    print(jsonResponse);
+    setState(() {
+      checkIfThereAnyTaskes();
+    });
   }
 }
 

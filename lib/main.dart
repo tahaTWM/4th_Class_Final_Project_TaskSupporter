@@ -1,10 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
-import './login/selectIP.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import './splashScreen.dart';
-import './navBar.dart';
-import 'login/logn.dart';
 
 void main() {
   // SharedPreferences.setMockInitialValues({});

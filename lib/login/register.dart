@@ -31,7 +31,7 @@ class _Register extends State<Register> {
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
-    var padding = EdgeInsets.only(top: 10, bottom: 5);
+    var padding = EdgeInsets.only(top: 5, bottom: 5);
     return Form(
       key: _formKey,
       child: ScaffoldMessenger(
@@ -79,29 +79,30 @@ class _Register extends State<Register> {
                   SizedBox(height: 10),
                   lebel(padding, 'Confirm Password'),
                   textField(_confPassword, true),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 12, 0, 5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        InkWell(
-                          onTap: () => Navigator.pop(context),
-                          child: Text(
-                            "Log In",
-                            style: TextStyle(
-                                fontFamily: "Rubik",
-                                fontSize: 20,
-                                color: Color.fromRGBO(112, 112, 112, 1)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+
+                  // Padding(
+                  //   padding: const EdgeInsets.fromLTRB(0, 12, 0, 5),
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //     children: [
+                  //       InkWell(
+                  //         onTap: () => Navigator.pop(context),
+                  //         child: Text(
+                  //           "Log In",
+                  //           style: TextStyle(
+                  //               fontFamily: "Rubik",
+                  //               fontSize: 20,
+                  //               color: Color.fromRGBO(112, 112, 112, 1)),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                   SizedBox(height: 15),
                   Container(
                     decoration: BoxDecoration(
                         color: Color.fromRGBO(0, 82, 204, 1),
-                        borderRadius: BorderRadius.circular(20)),
+                        borderRadius: BorderRadius.circular(10)),
                     width: double.infinity,
                     height: 60,
                     // ignore: deprecated_member_use
@@ -118,6 +119,30 @@ class _Register extends State<Register> {
                             fontSize: 22,
                             fontFamily: "Rubik",
                             color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Container(
+                    decoration: BoxDecoration(
+                        color: Color.fromRGBO(216, 229, 255, 1),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                            width: 1, color: Color.fromRGBO(0, 104, 255, 1))),
+                    width: double.infinity,
+                    height: 60,
+                    // ignore: deprecated_member_use
+                    child: FlatButton(
+                      onPressed: () async {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        "Back to LogIn",
+                        style: TextStyle(
+                            fontSize: 22,
+                            fontFamily: "Rubik",
+                            color: Color.fromRGBO(62, 128, 255, 1)),
                       ),
                     ),
                   ),
@@ -152,7 +177,7 @@ class _Register extends State<Register> {
       decoration: InputDecoration(
         contentPadding: EdgeInsets.all(15),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(15),
           borderSide: new BorderSide(color: Colors.black),
         ),
       ),

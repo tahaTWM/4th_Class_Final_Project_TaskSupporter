@@ -42,7 +42,7 @@ class _Logn extends State<Logn> {
       child: ScaffoldMessenger(
         key: scaffoldMessengerKey,
         child: Scaffold(
-            resizeToAvoidBottomInset: true,
+            // resizeToAvoidBottomInset: true,
             backgroundColor: Color.fromRGBO(243, 246, 255, 1),
             body: SingleChildScrollView(
               padding: EdgeInsets.all(25),
@@ -193,54 +193,56 @@ class _Logn extends State<Logn> {
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Row(
                           children: [
-                            Container(
-                              width: MediaQuery.of(context).size.width * 0.5,
-                              padding: EdgeInsets.all(0),
-                              margin: EdgeInsets.all(0),
-                              child: ListTile(
-                                leading: GFCheckbox(
-                                  size: GFSize.SMALL,
-                                  inactiveBorderColor: Colors.black,
-                                  activeBorderColor: Colors.black,
-                                  inactiveBgColor: Colors.transparent,
-                                  activeBgColor: GFColors.WHITE,
-                                  type: GFCheckboxType.circle,
-                                  onChanged: _onChanged,
-                                  value: isCheck,
-                                  activeIcon: const Icon(
-                                    Icons.check,
-                                    size: 20,
-                                    color: GFColors.DARK,
-                                  ),
-                                  inactiveIcon: null,
+                            Padding(
+                              padding: const EdgeInsets.only(left: 5),
+                              child: GFCheckbox(
+                                size: GFSize.SMALL,
+                                inactiveBorderColor:
+                                    Color.fromRGBO(0, 82, 204, 1),
+                                activeBorderColor:
+                                    Color.fromRGBO(0, 82, 204, 1),
+                                inactiveBgColor: Colors.transparent,
+                                activeBgColor: GFColors.WHITE,
+                                type: GFCheckboxType.circle,
+                                onChanged: _onChanged,
+                                value: isCheck,
+                                activeIcon: const Icon(
+                                  Icons.check,
+                                  size: 20,
+                                  color: Color.fromRGBO(0, 82, 204, 1),
                                 ),
-                                title: Text(
-                                  "Remember Email",
-                                  style: TextStyle(
-                                      fontFamily: "Rubik",
-                                      fontSize: 18,
-                                      color: Color.fromRGBO(112, 112, 112, 1)),
-                                ),
+                                inactiveIcon: null,
                               ),
                             ),
+                            SizedBox(width: 5),
+                            Text(
+                              "Remember Email",
+                              style: TextStyle(
+                                  fontFamily: "Rubik",
+                                  fontSize: 18,
+                                  color: Color.fromRGBO(112, 112, 112, 1)),
+                            ),
+                            // Container(
+                            //   color: Colors.yellow,
+                            //   width: MediaQuery.of(context).size.width * 0.5,
+                            //   padding: EdgeInsets.all(0),
+                            //   margin: EdgeInsets.all(0),
+                            //   child: ListTile(
+                            //     leading: ,
+                            //     title: Text(
+
+                            //       style: TextStyle(
+                            //           fontFamily: "Rubik",
+                            //           fontSize: 18,
+                            //           color: Color.fromRGBO(112, 112, 112, 1)),
+                            //     ),
+                            //   ),
+                            // ),
                           ],
-                        ),
-                        InkWell(
-                          onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ForgotPassword())),
-                          child: Text(
-                            "Forgot Password",
-                            style: TextStyle(
-                                fontFamily: "Rubik",
-                                fontSize: 18,
-                                color: Color.fromRGBO(112, 112, 112, 1)),
-                          ),
                         ),
                       ],
                     ),
@@ -294,6 +296,26 @@ class _Logn extends State<Logn> {
                             color: Color.fromRGBO(62, 128, 255, 1)),
                       ),
                     ),
+                  ),
+                  SizedBox(height: 17),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      InkWell(
+                        onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ForgotPassword())),
+                        child: Text(
+                          "Forgot Password",
+                          style: TextStyle(
+                              fontFamily: "Rubik",
+                              fontSize: 18,
+                              color: Color.fromRGBO(112, 112, 112, 1),
+                              decoration: TextDecoration.underline),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
