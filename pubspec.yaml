@@ -29,6 +29,7 @@ dependencies:
   open_iconic_flutter: ^0.3.0
   page_transition: null
   path_provider: ^2.0.1
+  percent_indicator: ^3.0.1
   permission_handler: null
   provider: ^5.0.0
   shared_preferences: ^2.0.0

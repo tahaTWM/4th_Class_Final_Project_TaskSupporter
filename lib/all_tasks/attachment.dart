@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 
 class Attachment extends StatefulWidget {
   @override
@@ -12,6 +14,25 @@ class Attachment extends StatefulWidget {
 }
 
 class _AttachmentState extends State<Attachment> {
+  bool upload = false;
+  var list = [];
+  double percent = 0.0;
+  @override
+  void initState() {
+    Timer timer;
+    timer = Timer.periodic(Duration(milliseconds: 1000), (_) {
+      setState(() {
+        percent += 10;
+        if (percent >= 100) {
+          timer.cancel();
+          // percent=0;
+        }
+      });
+    });
+    super.initState();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,7 +104,11 @@ class _AttachmentState extends State<Attachment> {
                     }
                     break;
                   case 2:
-                    {}
+                    {
+                      setState(() {
+                        upload = true;
+                      });
+                    }
 
                     break;
                 }
@@ -93,6 +118,31 @@ class _AttachmentState extends State<Attachment> {
         ],
         iconTheme: IconThemeData(color: Colors.blue, size: 28),
       ),
+      body: upload != true
+          ? Center(
+              child: Text("NoThing Now"),
+            )
+          : Container(
+              margin: EdgeInsets.only(left: 30, right: 30),
+              alignment: Alignment.center,
+              child: LinearPercentIndicator(
+                //leaner progress bar
+                animation: true,
+                animationDuration: 1000,
+                lineHeight: 20.0,
+                percent: percent / 100,
+                center: Text(
+                  percent.toString() + "%",
+                  style: TextStyle(
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black),
+                ),
+                linearStrokeCap: LinearStrokeCap.roundAll,
+                progressColor: Colors.blue[400],
+                backgroundColor: Colors.grey[300],
+              ),
+            ),
     );
   }
   //this function to add attachment to task
