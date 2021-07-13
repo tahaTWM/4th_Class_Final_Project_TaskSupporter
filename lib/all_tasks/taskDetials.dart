@@ -100,7 +100,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                                           _history[index]["old_task_status"] +
                                           " To " +
                                           _history[index]["new_task_status"]
-                                      : Container(),
+                                      : "Added Image Attachment OR PDF",
                               // overflow: TextOverflow.ellipsis,
                             ),
                             trailing: Text(timeago.format(DateTime.parse(

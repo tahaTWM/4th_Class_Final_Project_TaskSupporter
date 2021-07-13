@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:path/path.dart';
@@ -11,8 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:advance_pdf_viewer/advance_pdf_viewer.dart';
 
 import '../main.dart';
 
@@ -29,19 +29,9 @@ class _AttachmentState extends State<Attachment> {
   double percent = 0.0;
   File image;
   File file;
-  String res = '';
+  List res = [];
   @override
   void initState() {
-    Timer timer;
-    timer = Timer.periodic(Duration(milliseconds: 500), (_) {
-      setState(() {
-        percent += 10;
-        if (percent >= 100) {
-          timer.cancel();
-          // percent=0;
-        }
-      });
-    });
     checkIfThereAnyAttachment();
     super.initState();
   }
@@ -49,114 +39,144 @@ class _AttachmentState extends State<Attachment> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(243, 246, 255, 1),
-      appBar: AppBar(
         backgroundColor: Color.fromRGBO(243, 246, 255, 1),
-        elevation: 0,
-        title: Text(
-          "Attachments",
-          style: TextStyle(color: Colors.black),
-        ),
-        actions: [
-          Container(
-            decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(18)),
-            padding: EdgeInsets.symmetric(horizontal: 5),
-            margin: EdgeInsets.only(right: 10, top: 7),
-            child: PopupMenuButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(15.0))),
-              icon: Icon(Icons.more_vert, size: 28, color: Colors.blue),
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  value: 1,
-                  child: Row(
-                    children: [
-                      Icon(
-                        CupertinoIcons.paperclip,
-                        size: 30,
-                        // color: Color.fromRGBO(158, 158, 158, 1),
-                      ),
-                      SizedBox(width: 12),
-                      Text(
-                        "Add Attachment",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontFamily: "RubicB",
+        appBar: AppBar(
+          backgroundColor: Color.fromRGBO(243, 246, 255, 1),
+          elevation: 0,
+          title: Text(
+            "Attachments",
+            style: TextStyle(color: Colors.black),
+          ),
+          actions: [
+            Container(
+              decoration: BoxDecoration(
+                  color: Colors.white, borderRadius: BorderRadius.circular(18)),
+              padding: EdgeInsets.symmetric(horizontal: 2),
+              margin: EdgeInsets.only(right: 10, top: 7),
+              child: PopupMenuButton(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(15.0))),
+                icon: Icon(Icons.more_vert, size: 26, color: Colors.blue),
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 1,
+                    child: Row(
+                      children: [
+                        Icon(
+                          CupertinoIcons.paperclip,
+                          size: 30,
+                          // color: Color.fromRGBO(158, 158, 158, 1),
                         ),
-                      )
-                    ],
+                        SizedBox(width: 12),
+                        Text(
+                          "Add Attachment",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontFamily: "RubicB",
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-                PopupMenuItem(
-                  value: 2,
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.cancel_outlined,
-                        size: 30,
-                        color: Color.fromRGBO(158, 158, 158, 1),
-                      ),
-                      SizedBox(width: 12),
-                      Text(
-                        "Cancel",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontFamily: "RubicB",
+                  PopupMenuItem(
+                    value: 2,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.cancel_outlined,
+                          size: 30,
+                          color: Color.fromRGBO(158, 158, 158, 1),
                         ),
-                      )
-                    ],
+                        SizedBox(width: 12),
+                        Text(
+                          "Cancel",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontFamily: "RubicB",
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              ],
-              onSelected: (item) {
-                switch (item) {
-                  case 1:
-                    {
-                      _showPickerFileOrImage(context);
-                    }
-                    break;
-                  case 2:
-                    {
-                      setState(() {
-                        upload = true;
-                      });
-                    }
+                ],
+                onSelected: (item) {
+                  switch (item) {
+                    case 1:
+                      {
+                        _showPickerFileOrImage(context);
+                      }
+                      break;
+                    case 2:
+                      {
+                        setState(() {
+                          upload = true;
+                        });
+                      }
 
-                    break;
-                }
-              },
-            ),
-          )
-        ],
-        iconTheme: IconThemeData(color: Colors.blue, size: 28),
-      ),
-      body: upload != true
-          ? Center(
-              child: Text(res),
-            )
-          : Container(
-              margin: EdgeInsets.only(left: 30, right: 30),
-              alignment: Alignment.center,
-              child: LinearPercentIndicator(
-                //leaner progress bar
-                animation: true,
-                animationDuration: 1000,
-                lineHeight: 20.0,
-                percent: percent / 100,
-                center: Text(
-                  percent.toString() + "%",
-                  style: TextStyle(
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black),
-                ),
-                linearStrokeCap: LinearStrokeCap.roundAll,
-                progressColor: Colors.blue[400],
-                backgroundColor: Colors.grey[300],
+                      break;
+                  }
+                },
               ),
-            ),
-    );
+            )
+          ],
+          iconTheme: IconThemeData(color: Colors.blue, size: 28),
+        ),
+        body: Padding(
+          padding: EdgeInsets.all(10),
+          child: res != null
+              ? ListView.builder(
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      onLongPress: () {
+                        print(res[index]["id"].toString() + "\n");
+                        print(res[index]["path"].toString().split('/')[3]);
+                      },
+
+                      leading: CircleAvatar(
+                        backgroundImage: NetworkImage(
+                            "${MyApp.url}${res[index]["user_avatar"]}"),
+                      ),
+                      title: Text(
+                        res[index]["firstName"] +
+                            " " +
+                            res[index]["secondName"],
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                      subtitle: Text(
+                        res[index]["name"],
+                      ),
+                      // subtitle: Image.network("${MyApp.url}${res[index]["path"]}"),
+                      // overflow: TextOverflow.ellipsis,
+                      // ),
+                      trailing: res[index]["attachment_type"] == "IMAGE"
+                          ? InkWell(
+                              onTap: () => showDialog(
+                                  context: context,
+                                  builder: (_) => ImageDialog(
+                                      "${MyApp.url}${res[index]["path"]}")),
+                              child: Image.network(
+                                  "${MyApp.url}${res[index]["path"]}"),
+                            )
+                          : InkWell(
+                              onTap: () async {
+                                final url = "${MyApp.url}${res[index]["path"]}";
+                                print(url);
+                                PDFDocument doc =
+                                    await PDFDocument.fromURL(url);
+                                PDFViewer(document: doc);
+                              },
+                              child: Icon(CupertinoIcons.paperclip)),
+                    );
+                  },
+                  itemCount: res.length,
+                )
+              : Center(
+                  child: Text("No Attachment Found"),
+                ),
+        ));
   }
   //this function to add attachment to task
   //image picker
@@ -232,11 +252,15 @@ class _AttachmentState extends State<Attachment> {
                       title: new Text('File'),
                       onTap: () async {
                         FilePickerResult result =
-                            await FilePicker.platform.pickFiles();
+                            await FilePicker.platform.pickFiles(
+                          type: FileType.custom,
+                          allowedExtensions: ['pdf'],
+                        );
 
                         if (result != null) {
                           File file2 = File(result.files.single.path);
-                          _confromUploadImageOrFile(context, file2);
+                          // _confromUploadImageOrFile(context, file2);
+                          uploadimage(context, file2);
                         } else {
                           Navigator.of(context).pop();
                         }
@@ -310,28 +334,34 @@ class _AttachmentState extends State<Attachment> {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
     if (_file != null) {
+      print("---------------------");
       print(lookupMimeType(_file.path));
       var fileType = lookupMimeType(_file.path);
-      if (fileType.split('/')[0] == "image") {
-        var imageBytes = _file.readAsBytesSync();
-        var request = http.MultipartRequest(
-            "POST",
-            Uri.parse(
-                "${MyApp.url}/workspace/task/${widget.taskID}/attachment"));
-        request.files.add(
-          http.MultipartFile.fromBytes(
-            "taskAttachment",
-            imageBytes,
-            filename: basename(image.path),
-            contentType:
-                MediaType(fileType.split('/')[0], fileType.split('/')[1]),
-          ),
-        );
-        request.headers.addAll({"token": sharedPreferences.getString("token")});
-        final response = await request.send();
-        final resSTR = await response.stream.bytesToString();
-        print(resSTR);
+      // if (fileType.split('/')[0] == "image") {
+      var imageBytes = _file.readAsBytesSync();
+      var request = http.MultipartRequest("POST",
+          Uri.parse("${MyApp.url}/workspace/task/${widget.taskID}/attachment"));
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          "taskAttachment",
+          imageBytes,
+          filename: basename(_file.path),
+          contentType:
+              MediaType(fileType.split('/')[0], fileType.split('/')[1]),
+        ),
+      );
+      request.headers.addAll({"token": sharedPreferences.getString("token")});
+      final response = await request.send();
+      final resSTR = await response.stream.bytesToString();
+      var jsonRespnse = jsonDecode(resSTR);
+      if (jsonRespnse["successful"] == true) {
+        setState(() {
+          checkIfThereAnyAttachment();
+        });
       }
+      // }else{
+
+      // }
     }
   }
 
@@ -352,11 +382,56 @@ class _AttachmentState extends State<Attachment> {
     jsonResponse = json.decode(response.body);
     if (jsonResponse["successful"]) {
       setState(() {
-        res = jsonResponse.toString();
+        res = jsonResponse["data"];
       });
+      print(res);
     }
     if (!jsonResponse["successful"]) {
       print("error");
     }
+  }
+
+  _deleteAttachment(int id, int folderID) async {
+    var jsonResponse = null;
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    Map<String, String> requestHeaders = {
+      "Content-type": "application/json; charset=UTF-8",
+      'token': sharedPreferences.getString("token"),
+    };
+    var url = Uri.parse(
+        '${MyApp.url}/workspace/task/${widget.taskID}/attachment/$id/$folderID');
+    var response = await http.post(
+      url,
+      headers: requestHeaders,
+      body: jsonEncode(<String, String>{}),
+    );
+
+    jsonResponse = json.decode(response.body);
+    if (jsonResponse["successful"]) {
+      setState(() {
+        res = jsonResponse["data"];
+      });
+      print(res);
+    }
+    if (!jsonResponse["successful"]) {
+      print("error");
+    }
+  }
+}
+
+class ImageDialog extends StatelessWidget {
+  String url;
+  ImageDialog(this.url);
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Container(
+        width: 200,
+        height: 200,
+        decoration: BoxDecoration(
+            image:
+                DecorationImage(image: NetworkImage(url), fit: BoxFit.contain)),
+      ),
+    );
   }
 }
