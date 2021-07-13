@@ -671,7 +671,7 @@ class _ShowAllTasksState extends State<ShowAllTasks>
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Attachment()));
+                                    builder: (context) => Attachment(newListReversed[index]["taskId"],)));
                           },
                           child: Row(
                             children: [

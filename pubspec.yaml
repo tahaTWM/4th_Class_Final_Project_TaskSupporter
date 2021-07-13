@@ -26,6 +26,7 @@ dependencies:
   image_picker: ^0.6.6+5
   intl: null
   lottie: ^1.0.1
+  mime: ^1.0.0
   open_iconic_flutter: ^0.3.0
   page_transition: null
   path_provider: ^2.0.1

@@ -1,14 +1,24 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+import 'package:path/path.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../main.dart';
 
 class Attachment extends StatefulWidget {
+  int taskID;
+  Attachment(this.taskID);
   @override
   _AttachmentState createState() => _AttachmentState();
 }
@@ -17,10 +27,13 @@ class _AttachmentState extends State<Attachment> {
   bool upload = false;
   var list = [];
   double percent = 0.0;
+  File image;
+  File file;
+  String res = '';
   @override
   void initState() {
     Timer timer;
-    timer = Timer.periodic(Duration(milliseconds: 1000), (_) {
+    timer = Timer.periodic(Duration(milliseconds: 500), (_) {
       setState(() {
         percent += 10;
         if (percent >= 100) {
@@ -29,7 +42,7 @@ class _AttachmentState extends State<Attachment> {
         }
       });
     });
-    super.initState();
+    checkIfThereAnyAttachment();
     super.initState();
   }
 
@@ -120,7 +133,7 @@ class _AttachmentState extends State<Attachment> {
       ),
       body: upload != true
           ? Center(
-              child: Text("NoThing Now"),
+              child: Text(res),
             )
           : Container(
               margin: EdgeInsets.only(left: 30, right: 30),
@@ -218,9 +231,22 @@ class _AttachmentState extends State<Attachment> {
                       leading: new Icon(Icons.insert_drive_file),
                       title: new Text('File'),
                       onTap: () async {
-                        var file =
-                            await FilePicker.platform.pickFiles() as File;
-                        _confromUploadImageOrFile(context, file);
+                        FilePickerResult result =
+                            await FilePicker.platform.pickFiles();
+
+                        if (result != null) {
+                          File file2 = File(result.files.single.path);
+                          _confromUploadImageOrFile(context, file2);
+                        } else {
+                          Navigator.of(context).pop();
+                        }
+                        // FilePickerResult file2 =
+                        //     await FilePicker.platform.pickFiles(
+                        //   type: FileType.custom,
+                        //   allowedExtensions: ['jpg', 'pdf', 'doc'],
+                        // );
+                        // print(file2.paths.toString());
+
                         Navigator.of(context).pop();
                       }),
                   new ListTile(
@@ -253,7 +279,7 @@ class _AttachmentState extends State<Attachment> {
     _confromUploadImageOrFile(context, _image);
   }
 
-  _confromUploadImageOrFile(BuildContext context, File _image) {
+  _confromUploadImageOrFile(BuildContext context, File file) {
     return showDialog(
         context: context,
         builder: (contect) {
@@ -266,6 +292,7 @@ class _AttachmentState extends State<Attachment> {
             actions: [
               RaisedButton(
                 onPressed: () {
+                  uploadimage(context, file);
                   Navigator.pop(context);
                 },
                 child: Text("Yes"),
@@ -277,5 +304,59 @@ class _AttachmentState extends State<Attachment> {
             ],
           );
         });
+  }
+
+  uploadimage(BuildContext context, File _file) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+
+    if (_file != null) {
+      print(lookupMimeType(_file.path));
+      var fileType = lookupMimeType(_file.path);
+      if (fileType.split('/')[0] == "image") {
+        var imageBytes = _file.readAsBytesSync();
+        var request = http.MultipartRequest(
+            "POST",
+            Uri.parse(
+                "${MyApp.url}/workspace/task/${widget.taskID}/attachment"));
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            "taskAttachment",
+            imageBytes,
+            filename: basename(image.path),
+            contentType:
+                MediaType(fileType.split('/')[0], fileType.split('/')[1]),
+          ),
+        );
+        request.headers.addAll({"token": sharedPreferences.getString("token")});
+        final response = await request.send();
+        final resSTR = await response.stream.bytesToString();
+        print(resSTR);
+      }
+    }
+  }
+
+  checkIfThereAnyAttachment() async {
+    var jsonResponse = null;
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    Map<String, String> requestHeaders = {
+      "Content-type": "application/json; charset=UTF-8",
+      'token': sharedPreferences.getString("token"),
+    };
+    var url =
+        Uri.parse('${MyApp.url}/workspace/task/${widget.taskID}/attachment');
+    var response = await http.get(
+      url,
+      headers: requestHeaders,
+    );
+
+    jsonResponse = json.decode(response.body);
+    if (jsonResponse["successful"]) {
+      setState(() {
+        res = jsonResponse.toString();
+      });
+    }
+    if (!jsonResponse["successful"]) {
+      print("error");
+    }
   }
 }

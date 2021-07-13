@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../login/logn.dart';
 import '../main.dart';
 import 'package:flutter/cupertino.dart';
-
+import 'package:mime/mime.dart';
 import '../navBar.dart';
 
 class Profile extends StatefulWidget {
@@ -226,7 +226,7 @@ class _ProfileState extends State<Profile> {
                 ),
               ),
               SizedBox(
-                height: width > 400 ? 30 : 20,
+                height: width > 400 ? 30 : 10,
               ),
               Text(
                 fName + " " + sName,
@@ -309,7 +309,7 @@ class _ProfileState extends State<Profile> {
                 ],
               ),
               SizedBox(
-                height: width > 400 ? 150 : 70,
+                height: width > 400 ? 90 : 30,
               ),
               InkWell(
                 onTap: () => bottomsheet(context, "Edit Account"),
@@ -383,6 +383,7 @@ class _ProfileState extends State<Profile> {
   uploadimage(BuildContext context) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     if (image != null) {
+      var imageType = lookupMimeType(image.path);
       var imageBytes = image.readAsBytesSync();
       var request =
           http.MultipartRequest("POST", Uri.parse("${MyApp.url}/user/avatar"));
@@ -391,7 +392,8 @@ class _ProfileState extends State<Profile> {
           "userAvatar",
           imageBytes,
           filename: basename(image.path),
-          contentType: new MediaType('image', 'jpg'),
+          contentType:
+              MediaType(imageType.split('/')[0], imageType.split('/')[1]),
         ),
       );
       request.headers.addAll({"token": sharedPreferences.getString("token")});
