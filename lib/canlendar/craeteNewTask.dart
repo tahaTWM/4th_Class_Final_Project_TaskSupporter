@@ -45,7 +45,6 @@ class _CreateNewTaskState extends State<CreateNewTask> {
     setState(() {
       _selectedPriorty = priortyKey;
     });
-    print(_selectedPriorty);
   }
 
   TextEditingController _textEditingControllerTitle = TextEditingController();
@@ -90,6 +89,8 @@ class _CreateNewTaskState extends State<CreateNewTask> {
                 padding: EdgeInsets.symmetric(horizontal: 5),
                 margin: EdgeInsets.only(right: 10, top: 7),
                 child: PopupMenuButton(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(15.0))),
                   icon: Icon(Icons.more_vert, size: 28, color: Colors.blue),
                   itemBuilder: (context) => [
                     PopupMenuItem(

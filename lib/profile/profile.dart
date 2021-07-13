@@ -74,6 +74,8 @@ class _ProfileState extends State<Profile> {
               padding: EdgeInsets.symmetric(horizontal: 5),
               margin: EdgeInsets.only(right: 10, top: 7),
               child: PopupMenuButton(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(15.0))),
                 icon: Icon(
                   Icons.more_vert,
                   size: width > 400 ? 30 : 20,
@@ -244,12 +246,16 @@ class _ProfileState extends State<Profile> {
                             padding: EdgeInsets.all(5),
                             child: Text(
                               workspaces,
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: width > 400 ? 22 : 18),
                             )),
                         // SizedBox(height: 5),
                         Text(
                           "Workspace",
-                          style: TextStyle(color: Colors.grey[700]),
+                          style: TextStyle(
+                              color: Colors.grey[700],
+                              fontSize: width > 400 ? 22 : 18),
                         ),
                       ],
                     ),
@@ -263,12 +269,16 @@ class _ProfileState extends State<Profile> {
                             padding: EdgeInsets.all(5),
                             child: Text(
                               tasks,
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: width > 400 ? 22 : 18),
                             )),
                         // SizedBox(height: 5),
                         Text(
                           "Tasks",
-                          style: TextStyle(color: Colors.grey[700]),
+                          style: TextStyle(
+                              color: Colors.grey[700],
+                              fontSize: width > 400 ? 22 : 18),
                         ),
                       ],
                     ),
@@ -282,12 +292,16 @@ class _ProfileState extends State<Profile> {
                             padding: EdgeInsets.all(5),
                             child: Text(
                               "0",
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: width > 400 ? 22 : 18),
                             )),
                         // SizedBox(height: 3),
                         Text(
                           "Notifactions",
-                          style: TextStyle(color: Colors.grey[700]),
+                          style: TextStyle(
+                              color: Colors.grey[700],
+                              fontSize: width > 400 ? 22 : 18),
                         ),
                       ],
                     ),
@@ -383,7 +397,6 @@ class _ProfileState extends State<Profile> {
       request.headers.addAll({"token": sharedPreferences.getString("token")});
       final response = await request.send();
       final resSTR = await response.stream.bytesToString();
-      print(json.decode(resSTR));
 
       showsnakbar(json.decode(resSTR), context);
     }
@@ -782,14 +795,12 @@ class _ProfileState extends State<Profile> {
     var response = null, jsonResponse = null;
     var url = Uri.parse("${MyApp.url}/user/password/reset");
     if (newPassword == confirmPassword) {
-      print(oldPassword + " " + newPassword + " " + confirmPassword);
       response = http.post(url,
           headers: requestHeaders,
           body: jsonEncode(<String, String>{
             "oldPassword": oldPassword,
             "newPassword": newPassword,
           }));
-      print(response.body);
       jsonResponse = json.decode(response.body);
 
       if (jsonResponse["successful"]) {

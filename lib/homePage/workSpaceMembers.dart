@@ -239,7 +239,6 @@ class _WorkSpaceMemberState extends State<WorkSpaceMember> {
       setState(() {
         listOfWorkspaceMembers = jsonResponse["data"];
       });
-    print(listOfWorkspaceMembers);
   }
 
   var listOfWorkspaceMembers = [];
@@ -264,7 +263,6 @@ class _WorkSpaceMemberState extends State<WorkSpaceMember> {
           ? jsonResponse["data"]
           : jsonResponse["data"]["users"];
     });
-    print(listOfWorkspaceMembers);
   }
 
   //invite employee

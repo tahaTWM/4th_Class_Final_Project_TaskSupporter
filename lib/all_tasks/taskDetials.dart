@@ -143,7 +143,6 @@ class _TaskDetailsState extends State<TaskDetails> {
         _history = jsonResponse["data"]["taskActions"];
       });
     } else {
-      print(id + jsonResponse["data"]);
       setState(() {
         _history = [];
       });

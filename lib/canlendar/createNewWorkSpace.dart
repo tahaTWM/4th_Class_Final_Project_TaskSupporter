@@ -104,7 +104,6 @@ class _CreateNewWorkSpaceState extends State<CreateNewWorkSpace> {
       ),
     );
     jsonResponse = json.decode(response.body);
-    print(jsonResponse);
     if (jsonResponse["successful"]) {
       Navigator.push(
           context,
@@ -179,7 +178,6 @@ class _CreateNewWorkSpaceState extends State<CreateNewWorkSpace> {
       );
     }
     jsonResponse = json.decode(response.body);
-    print(jsonResponse);
     if (jsonResponse['successful']) {
       var list2 = await sharedPreferences.getStringList("firstSecond");
       Navigator.push(
@@ -464,7 +462,7 @@ class _CreateNewWorkSpaceState extends State<CreateNewWorkSpace> {
                       itemBuilder: (context, index) {
                         var image =
                             listOfWorkspaceMembers[index]["user_avatar"];
-                        print(image);
+                        
                         return Padding(
                           padding: const EdgeInsets.symmetric(
                               vertical: 20, horizontal: 20),
@@ -606,7 +604,6 @@ class _CreateNewWorkSpaceState extends State<CreateNewWorkSpace> {
       headers: requestHeaders,
     );
     jsonResponse = json.decode(response.body);
-    print(jsonResponse["data"]);
     setState(() {
       if (widget.workspaceID != null) {
         listOfWorkspaceMembers = jsonResponse["data"];

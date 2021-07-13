@@ -102,7 +102,6 @@ class _AuthPageState extends State<AuthPage> {
               //       controller.animateToPage(++slideIndex,
               //           duration: Duration(milliseconds: 100),
               //           curve: Curves.linear);
-              //       print("this is slideIndex: $slideIndex");
               //     },
               //     color: Color.fromRGBO(111, 224, 153, 1),
               //     textColor: Colors.white,

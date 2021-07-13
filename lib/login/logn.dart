@@ -359,7 +359,6 @@ class _Logn extends State<Logn> {
   };
 
   signIn(String email, String password) async {
-    print(email + " " + password + "  " + "${MyApp.url}/user/login");
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     // ignore: avoid_init_to_null
     var jsonResponse = null;
@@ -377,7 +376,6 @@ class _Logn extends State<Logn> {
     );
 
     jsonResponse = json.decode(response.body);
-    print(jsonResponse);
 
     if (jsonResponse["successful"] == true) {
       await sharedPreferences.setString("token", jsonResponse['data']['token']);

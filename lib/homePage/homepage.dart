@@ -51,11 +51,20 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     _searchForMember.clear();
     checkWorkSpaces();
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    var i = 1;
+
+    // Timer.periodic(Duration(seconds: 3), (timer) {
+    //   print(++i);
+    //   // setState(() {
+    //   //   checkWorkSpaces();
+    //   // });
+    // });
     var now = DateTime.now();
     DateTime formattedDate = now;
     var width = MediaQuery.of(context).size.width;
@@ -423,6 +432,9 @@ class _HomePageState extends State<HomePage> {
                         ),
                         SizedBox(width: 10),
                         PopupMenuButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15.0))),
                           icon: Icon(
                             Icons.more_horiz,
                             size: width > 400 ? 40 : 25,
@@ -680,9 +692,6 @@ class _HomePageState extends State<HomePage> {
                                     physics: BouncingScrollPhysics(),
                                     scrollDirection: Axis.horizontal,
                                     itemBuilder: (BuildContext bc, int index) {
-                                      print(listOfWorkspace[workspaceIndex]
-                                              ["users"]
-                                          .length);
                                       return listOfWorkspace[workspaceIndex]
                                                       ["users"][index]
                                                   ["user_avatar"] ==
@@ -757,261 +766,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  //popup invaite member
-  // void _showDialog(int workSpaceID, BuildContext context) {
-  //   var width = MediaQuery.of(context).size.width;
-  //   var height = MediaQuery.of(context).size.height;
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       // return object of type Dialog
-  //       return AlertDialog(
-  //         shape: RoundedRectangleBorder(
-  //             borderRadius: BorderRadius.all(Radius.circular(25))),
-  //         elevation: 5,
-  //         title: new Text(
-  //           "Search for Member",
-  //           style: TextStyle(fontSize: width < 400 ? 16 : 20),
-  //         ),
-  //         content: Container(
-  //           height: height * 0.5,
-  //           width: width,
-  //           child: Column(
-  //             children: [
-  //               Container(
-  //                 height: width < 400 ? 55 : 75,
-  //                 margin: EdgeInsets.all(15),
-  //                 padding: EdgeInsets.symmetric(horizontal: 10),
-  //                 decoration: BoxDecoration(
-  //                     color: Color.fromRGBO(243, 246, 255, 1),
-  //                     borderRadius: BorderRadius.circular(10)),
-  //                 child: Center(
-  //                   child: TextFormField(
-  //                     autofocus: keyboard,
-  //                     focusNode: inputNode,
-  //                     controller: _searchForMember,
-  //                     onFieldSubmitted: (_) {
-  //                       _searchForMemberInTask(
-  //                           workSpaceID, _searchForMember.text);
-  //                     },
-  //                     // ignore: missing_return
-  //                     validator: (value) {
-  //                       if (value == null || value.isEmpty) {
-  //                         return 'search box is Empty';
-  //                       }
-  //                       return null;
-  //                     },
-  //                     style: TextStyle(
-  //                       fontSize: width < 400 ? 16 : 20,
-  //                       color: Color.fromRGBO(0, 82, 205, 1),
-  //                     ),
-  //                     decoration: InputDecoration(
-  //                       border: InputBorder.none,
-  //                       hintText: "Search for Member",
-  //                       // hintStyle: TextStyle(
-  //                       //   fontSize: 25,
-  //                       // ),
-  //                       icon: Icon(Icons.search, size: 30),
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ),
-  //               Expanded(
-  //                 child: Container(
-  //                   width: width,
-  //                   child: ListView.builder(
-  //                     itemBuilder: (context, index) {
-  //                       return Padding(
-  //                         padding: const EdgeInsets.symmetric(
-  //                             vertical: 20, horizontal: 20),
-  //                         child: Row(
-  //                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                             children: [
-  //                               Row(
-  //                                 children: [
-  //                                   listOfWorkspaceMembers[index]
-  //                                               ["user_avatar"] ==
-  //                                           null
-  //                                       ? Container(
-  //                                           width: width < 400 ? 50 : 60,
-  //                                           height: width < 400 ? 50 : 60,
-  //                                           decoration: BoxDecoration(
-  //                                             shape: BoxShape.circle,
-  //                                             border: Border.all(),
-  //                                           ),
-  //                                           child: Center(
-  //                                               child: Text(
-  //                                                   listOfWorkspaceMembers[
-  //                                                           index]["firstName"]
-  //                                                       .toString()
-  //                                                       .split('')[0]
-  //                                                       .toUpperCase()
-  //                                                       .toUpperCase())))
-  //                                       : ClipRRect(
-  //                                           borderRadius:
-  //                                               BorderRadius.circular(100),
-  //                                           child: Image.network(
-  //                                             "${MyApp.url}${listOfWorkspaceMembers[index]["user_avatar"]}",
-  //                                             fit: BoxFit.cover,
-  //                                             width: width < 400 ? 40 : 60,
-  //                                             height: width < 400 ? 40 : 60,
-  //                                             loadingBuilder:
-  //                                                 (BuildContext context,
-  //                                                     Widget child,
-  //                                                     ImageChunkEvent
-  //                                                         loadingProgress) {
-  //                                               if (loadingProgress == null)
-  //                                                 return child;
-  //                                               return Center(
-  //                                                 child:
-  //                                                     CircularProgressIndicator(
-  //                                                   value: loadingProgress
-  //                                                               .expectedTotalBytes !=
-  //                                                           null
-  //                                                       ? loadingProgress
-  //                                                               .cumulativeBytesLoaded /
-  //                                                           loadingProgress
-  //                                                               .expectedTotalBytes
-  //                                                       : null,
-  //                                                 ),
-  //                                               );
-  //                                             },
-  //                                           ),
-  //                                         ),
-  //                                   SizedBox(width: 10),
-  //                                   Row(
-  //                                     crossAxisAlignment:
-  //                                         CrossAxisAlignment.start,
-  //                                     children: [
-  //                                       Text(
-  //                                         listOfWorkspaceMembers[index]
-  //                                             ['firstName'],
-  //                                         style: TextStyle(
-  //                                           fontSize: width < 400 ? 18 : 22,
-  //                                           color: Colors.black,
-  //                                         ),
-  //                                       ),
-  //                                       SizedBox(width: 10),
-  //                                       Text(
-  //                                         listOfWorkspaceMembers[index]
-  //                                             ['secondName'],
-  //                                         style: TextStyle(
-  //                                           fontSize: width < 400 ? 18 : 22,
-  //                                           color: Colors.black,
-  //                                         ),
-  //                                       )
-  //                                     ],
-  //                                   ),
-  //                                 ],
-  //                               ),
-  //                               Row(
-  //                                 children: [
-  //                                   listOfWorkspaceMembers[index]["isJoined"] !=
-  //                                           0
-  //                                       ? IconButton(
-  //                                           onPressed: () {},
-  //                                           icon: Icon(
-  //                                               Icons.person_remove_rounded,
-  //                                               size: width < 400 ? 25 : 30,
-  //                                               color: Colors.red),
-  //                                         )
-  //                                       : IconButton(
-  //                                           icon: Icon(Icons.person_add_rounded,
-  //                                               size: width < 400 ? 25 : 30,
-  //                                               color: Colors.green),
-  //                                           onPressed: () {
-  //                                             _inviteEmployee(
-  //                                                 workSpaceID,
-  //                                                 listOfWorkspaceMembers[index]
-  //                                                     ["userId"],
-  //                                                 context);
-  //                                           })
-  //                                 ],
-  //                               )
-  //                             ]),
-  //                       );
-  //                     },
-  //                     itemCount: listOfWorkspaceMembers.length,
-  //                   ),
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //         actions: <Widget>[
-  //           // usually buttons at the bottom of the dialog
-  //           new FlatButton(
-  //             child: new Text("Close"),
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-
-  // invite member
-  var listOfWorkspaceMembers = [];
-
-  // _getMember(int workSpaceId, BuildContext context) async {
-  //   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-  //   Map<String, String> requestHeaders = {
-  //     "Content-type": "application/json; charset=UTF-8",
-  //     "token": sharedPreferences.getString("token"),
-  //   };
-  //   // print(sharedPreferences.getString("token") + '\n\n');
-  //   var jsonResponse = null;
-  //   var url = Uri.parse("${MyApp.url}/workspace/members/$workSpaceId");
-  //   var response = await http.get(
-  //     url,
-  //     headers: requestHeaders,
-  //   );
-  //   jsonResponse = json.decode(response.body);
-  //   setState(() {
-  //     listOfWorkspaceMembers = jsonResponse["data"];
-  //   });
-  //   _showDialog(workSpaceId, context);
-  // }
-
-  //search for member using API
-  // _searchForMemberInTask(int workSpaceID, String Searchcontent) async {
-  //   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-  //   Map<String, String> requestHeaders = {
-  //     "Content-type": "application/json; charset=UTF-8",
-  //     "token": sharedPreferences.getString("token"),
-  //   };
-  //   var jsonResponse = null;
-  //   var url = Uri.parse(
-  //       "${MyApp.url}/workspace/members/seek/$workSpaceID/$Searchcontent");
-  //   var response = await http.get(
-  //     url,
-  //     headers: requestHeaders,
-  //   );
-  //   jsonResponse = json.decode(response.body);
-  //   if (jsonResponse["data"] != null)
-  //     setState(() {
-  //       listOfWorkspaceMembers = jsonResponse["data"];
-  //     });
-  // }
-
-  // showKeyboard(BuildContext context) {
-  //   setState(() {
-  //     keyboard = !keyboard;
-  //   });
-  //   if (keyboard)
-  //     FocusScope.of(context).requestFocus(inputNode);
-  //   else {
-  //     FocusScope.of(context).unfocus();
-  //     _search.clear();
-  //   }
-  // }
-
-  // returnUsersCount(List list) {
-  //   return list.length;
-  // }
-
   checkWorkSpaces() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
@@ -1041,7 +795,17 @@ class _HomePageState extends State<HomePage> {
           notWorkspacefound = true;
           // ignore: unnecessary_statements
           if (jsonResponse['data'] != null) {
-            listOfWorkspace = jsonResponse['data'];
+            if (listOfWorkspace != null) {
+              if (listOfWorkspace != jsonResponse['data']) {
+                setState(() {
+                  listOfWorkspace = jsonResponse['data'];
+                });
+              }
+            } else {
+              setState(() {
+                listOfWorkspace = jsonResponse['data'];
+              });
+            }
           } else
             listOfWorkspace = [];
         });

@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'package:app2/all_tasks/attachment.dart';
 import 'package:app2/all_tasks/taskDetials.dart';
 import 'package:app2/homePage/workSpaceMembers.dart';
 import 'package:cupertino_radio_choice/cupertino_radio_choice.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -42,6 +45,8 @@ class _ShowAllTasksState extends State<ShowAllTasks>
   ScrollController _scrollController = ScrollController();
 
   bool closeTask = false;
+
+  File file;
 
   @override
   void initState() {
@@ -375,84 +380,6 @@ class _ShowAllTasksState extends State<ShowAllTasks>
     );
   }
 
-  // Widget tabbarAndView() {
-  //   return Expanded(
-  //     child: Column(
-  //       children: [
-  //         TabBar(
-  //           unselectedLabelColor: Colors.grey,
-  //           labelColor: Colors.blue,
-  //           indicator: CircleTabIndicator(color: Colors.blue, radius: 4),
-  //           isScrollable: true,
-  //           tabs: [
-  //             Tab(
-  //               child: Text(
-  //                 "Waiting",
-  //                 style: TextStyle(
-  //                   fontSize: 18,
-  //                   fontFamily: "Rubik",
-  //                   fontWeight: FontWeight.w600,
-  //                 ),
-  //               ),
-  //             ),
-  //             Tab(
-  //               child: Text(
-  //                 "InProcess",
-  //                 style: TextStyle(
-  //                   fontSize: 18,
-  //                   fontFamily: "Rubik",
-  //                   fontWeight: FontWeight.w600,
-  //                 ),
-  //               ),
-  //             ),
-  //             Tab(
-  //               child: Text(
-  //                 "Stack",
-  //                 style: TextStyle(
-  //                   fontSize: 18,
-  //                   fontFamily: "Rubik",
-  //                   fontWeight: FontWeight.w600,
-  //                 ),
-  //               ),
-  //             ),
-  //             Tab(
-  //               child: Text(
-  //                 "Done",
-  //                 style: TextStyle(
-  //                   fontSize: 18,
-  //                   fontFamily: "Rubik",
-  //                   fontWeight: FontWeight.w600,
-  //                 ),
-  //               ),
-  //             ),
-  //           ],
-  //           controller: _tabController,
-  //           indicatorSize: TabBarIndicatorSize.tab,
-  //         ),
-  //         Expanded(
-  //           child: TabBarView(
-  //             children: [
-  //               tabViewForTabBarAndTabView(
-  //                 listOfTasksWaiting,
-  //               ),
-  //               tabViewForTabBarAndTabView(
-  //                 listOfTasksInProcess,
-  //               ),
-  //               tabViewForTabBarAndTabView(
-  //                 listOfTasksStack,
-  //               ),
-  //               tabViewForTabBarAndTabView(
-  //                 listOfTasksDone,
-  //               ),
-  //             ],
-  //             controller: _tabController,
-  //           ),
-  //         )
-  //       ],
-  //     ),
-  //   );
-  // }
-
   Widget tabViewForTabBarAndTabView(List listOfTasks, String OldStatus) {
     var width = MediaQuery.of(context).size.width;
     if (listOfTasks.isNotEmpty) {
@@ -493,6 +420,9 @@ class _ShowAllTasksState extends State<ShowAllTasks>
                               borderRadius: BorderRadius.circular(20)),
                         ),
                         PopupMenuButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15.0))),
                           icon: Icon(Icons.more_horiz,
                               color: Colors.grey, size: 40),
                           itemBuilder: (context) => [
@@ -738,9 +668,10 @@ class _ShowAllTasksState extends State<ShowAllTasks>
                         SizedBox(width: 30),
                         InkWell(
                           onTap: () async {
-                            // if (await Permission.storage.request().isGranted)
-                            _showPicker(context);
-                            // displayBottomSheet(context);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Attachment()));
                           },
                           child: Row(
                             children: [
@@ -787,40 +718,6 @@ class _ShowAllTasksState extends State<ShowAllTasks>
           ));
   }
 
-  //this function to add attachment to task
-  //image picker
-
-  //select betwen camera and storage
-  void _showPicker(context) async {
-    await Permission.storage.request();
-
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return SafeArea(
-            child: Container(
-              child: new Wrap(
-                children: <Widget>[
-                  new ListTile(
-                      leading: new Icon(Icons.photo_library),
-                      title: new Text('Photo Library'),
-                      onTap: () {
-                        Navigator.of(context).pop();
-                      }),
-                  new ListTile(
-                    leading: new Icon(Icons.photo_camera),
-                    title: new Text('Camera'),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
-  }
-
   //get task from api
   checkIfThereAnyTaskes() async {
     var jsonResponse = null;
@@ -861,32 +758,6 @@ class _ShowAllTasksState extends State<ShowAllTasks>
         istaskFound = false;
       });
     }
-  }
-
-// for display attachment
-  displayBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-        elevation: 0,
-        context: context,
-        builder: (ctx) {
-          return Container(
-            color: Color(0xFF737373),
-            child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30))),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 40),
-                child: Text(
-                  "Welcome to AndroidVille!",
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-          );
-        });
   }
 
   delete(int id) async {
@@ -1066,15 +937,6 @@ class _ShowAllTasksState extends State<ShowAllTasks>
       "token": sharedPreferences.getString("token")
     };
     var url = Uri.parse("${MyApp.url}/task/action");
-    print(_action.text.toString() +
-        "------" +
-        oldStatus.toString() +
-        "------" +
-        _selectedStatus.toString() +
-        "------" +
-        _action.text.isNotEmpty.toString() +
-        "------" +
-        taskid.toString());
     respnse = await http.post(
       url,
       headers: requestHeaders,
@@ -1089,7 +951,7 @@ class _ShowAllTasksState extends State<ShowAllTasks>
       ),
     );
     jsonResponse = json.decode(respnse.body);
-    print(jsonResponse);
+
     setState(() {
       checkIfThereAnyTaskes();
     });

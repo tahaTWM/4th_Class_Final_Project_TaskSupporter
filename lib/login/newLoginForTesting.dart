@@ -60,7 +60,6 @@ class _NewLoginForTestingState extends State<NewLoginForTesting> {
           },
         ));
     jsonResponse = await json.decode(response.body);
-    print(jsonResponse["data"]);
     var result = await pref.setString("token", jsonResponse["data"]["token"]);
     await pref.setStringList('firstSecond', [
       jsonResponse['data']['firstName'],
@@ -70,6 +69,5 @@ class _NewLoginForTestingState extends State<NewLoginForTesting> {
     await pref.setString(
         "userAvatar", jsonResponse['data']['user_avatar'].toString());
 
-    print(result);
   }
 }
