@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
@@ -9,10 +10,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'package:advance_pdf_viewer/advance_pdf_viewer.dart';
 
 import '../main.dart';
 
@@ -163,10 +163,8 @@ class _AttachmentState extends State<Attachment> {
                           : InkWell(
                               onTap: () async {
                                 final url = "${MyApp.url}${res[index]["path"]}";
-                                print(url);
-                                PDFDocument doc =
-                                    await PDFDocument.fromURL(url);
-                                PDFViewer(document: doc);
+                                // print(url.split('/')[6]);
+                                // print(await getApplicationDocumentsDirectory());
                               },
                               child: Icon(CupertinoIcons.paperclip)),
                     );
@@ -178,6 +176,7 @@ class _AttachmentState extends State<Attachment> {
                 ),
         ));
   }
+
   //this function to add attachment to task
   //image picker
   //select betwen camera and storage
