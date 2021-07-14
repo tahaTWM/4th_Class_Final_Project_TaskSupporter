@@ -389,8 +389,12 @@ class _AttachmentState extends State<Attachment> {
     if (jsonResponse["successful"]) {
       setState(() {
         _res = jsonResponse["data"];
-        List<dynamic> resREV = _res.reversed.toList();
-        res = resREV;
+        if (_res != null) {
+          List<dynamic> resREV = _res.reversed.toList();
+          res = resREV;
+        } else {
+          res = null;
+        }
       });
     }
     if (!jsonResponse["successful"]) {

@@ -671,7 +671,9 @@ class _ShowAllTasksState extends State<ShowAllTasks>
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Attachment(newListReversed[index]["taskId"],)));
+                                    builder: (context) => Attachment(
+                                          newListReversed[index]["taskId"],
+                                        )));
                           },
                           child: Row(
                             children: [
@@ -779,7 +781,6 @@ class _ShowAllTasksState extends State<ShowAllTasks>
       setState(() {
         checkIfThereAnyTaskes();
       });
-      Navigator.pop(context);
     } else if (response.statusCode == 400) {
       print(jsonResponse["error"]);
     }
@@ -803,7 +804,6 @@ class _ShowAllTasksState extends State<ShowAllTasks>
       setState(() {
         checkIfThereAnyTaskes();
       });
-      Navigator.pop(context);
     } else if (response.statusCode == 400) {
       print(jsonResponse["error"]);
     }
