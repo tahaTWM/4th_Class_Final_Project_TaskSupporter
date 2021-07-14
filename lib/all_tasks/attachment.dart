@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:app2/all_tasks/pdeView.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
@@ -130,8 +131,12 @@ class _AttachmentState extends State<Attachment> {
                       onLongPress: () {
                         print(res[index]["id"].toString() + "\n");
                         print(res[index]["path"].toString().split('/')[3]);
+                        _confirmDelete(
+                            context,
+                            res[index]["id"],
+                            int.parse(
+                                res[index]["path"].toString().split('/')[3]));
                       },
-
                       leading: CircleAvatar(
                         backgroundImage: NetworkImage(
                             "${MyApp.url}${res[index]["user_avatar"]}"),
@@ -160,13 +165,14 @@ class _AttachmentState extends State<Attachment> {
                               child: Image.network(
                                   "${MyApp.url}${res[index]["path"]}"),
                             )
-                          : InkWell(
-                              onTap: () async {
+                          : IconButton(
+                              onPressed: () async {
                                 final url = "${MyApp.url}${res[index]["path"]}";
-                                // print(url.split('/')[6]);
-                                // print(await getApplicationDocumentsDirectory());
+                                final file = await loadNetwork(url);
+                                openPDF(context, file);
                               },
-                              child: Icon(CupertinoIcons.paperclip)),
+                              icon: Icon(CupertinoIcons.paperclip),
+                            ),
                     );
                   },
                   itemCount: res.length,
@@ -307,9 +313,9 @@ class _AttachmentState extends State<Attachment> {
         context: context,
         builder: (contect) {
           return AlertDialog(
-            title: Text("Changing Profile Image"),
+            title: Text("Upload Image"),
             content: Text(
-              "Are Sure You want to Change Profile image?",
+              "Are Sure You want to upload this Attachment Image?",
               overflow: TextOverflow.ellipsis,
             ),
             actions: [
@@ -366,6 +372,7 @@ class _AttachmentState extends State<Attachment> {
 
   checkIfThereAnyAttachment() async {
     var jsonResponse = null;
+    List<dynamic> _res = [];
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     Map<String, String> requestHeaders = {
       "Content-type": "application/json; charset=UTF-8",
@@ -381,9 +388,10 @@ class _AttachmentState extends State<Attachment> {
     jsonResponse = json.decode(response.body);
     if (jsonResponse["successful"]) {
       setState(() {
-        res = jsonResponse["data"];
+        _res = jsonResponse["data"];
+        List<dynamic> resREV = _res.reversed.toList();
+        res = resREV;
       });
-      print(res);
     }
     if (!jsonResponse["successful"]) {
       print("error");
@@ -399,23 +407,67 @@ class _AttachmentState extends State<Attachment> {
     };
     var url = Uri.parse(
         '${MyApp.url}/workspace/task/${widget.taskID}/attachment/$id/$folderID');
-    var response = await http.post(
+    var response = await http.delete(
       url,
       headers: requestHeaders,
-      body: jsonEncode(<String, String>{}),
     );
 
     jsonResponse = json.decode(response.body);
+    print(jsonResponse);
     if (jsonResponse["successful"]) {
       setState(() {
-        res = jsonResponse["data"];
+        checkIfThereAnyAttachment();
       });
-      print(res);
     }
     if (!jsonResponse["successful"]) {
       print("error");
     }
   }
+
+  _confirmDelete(BuildContext context, int id, int folderID) {
+    return showDialog(
+        context: context,
+        builder: (contect) {
+          return AlertDialog(
+            title: Text("Deleting Attachment"),
+            content: Text(
+              "Are you sure to Delete this Attachment?",
+              overflow: TextOverflow.ellipsis,
+            ),
+            actions: [
+              RaisedButton(
+                onPressed: () {
+                  _deleteAttachment(id, folderID);
+                  Navigator.pop(context);
+                },
+                child: Text("Yes"),
+              ),
+              RaisedButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text("No"),
+              ),
+            ],
+          );
+        });
+  }
+
+  Future<File> loadNetwork(String _url) async {
+    var _uri = Uri.parse(_url);
+    final response = await http.get(_uri);
+    final bytes = response.bodyBytes;
+
+    //save file
+    final filename = basename(_url);
+    final dir = await getApplicationDocumentsDirectory();
+
+    final file = File('${dir.path}/$filename');
+    await file.writeAsBytes(bytes, flush: true);
+    return file;
+  }
+
+  void openPDF(BuildContext context, File file) => Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => PDFViewerPage(file: file)),
+      );
 }
 
 class ImageDialog extends StatelessWidget {

@@ -100,7 +100,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                                           _history[index]["old_task_status"] +
                                           " To " +
                                           _history[index]["new_task_status"]
-                                      : "Added Image Attachment OR PDF",
+                                      : "Added Attachment to The task",
                               // overflow: TextOverflow.ellipsis,
                             ),
                             trailing: Text(timeago.format(DateTime.parse(
@@ -142,6 +142,7 @@ class _TaskDetailsState extends State<TaskDetails> {
       setState(() {
         _history = jsonResponse["data"]["taskActions"];
       });
+      print(_history);
     } else {
       setState(() {
         _history = [];
